@@ -1,18 +1,16 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/database';
 import PDFDocument from 'pdfkit';
-
-const prisma = new PrismaClient();
 
 export const generateProcessReport = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { startDate, endDate } = req.body;
 
     const process = await prisma.process.findUnique({
-      where: { id },
+      where: { id: Number(id) },
       include: {
         client: true,
+        user: true,
         tasks: true,
         tags: true,
       },
@@ -24,61 +22,43 @@ export const generateProcessReport = async (req: Request, res: Response) => {
 
     const doc = new PDFDocument();
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=process-${process.number}.pdf`);
+    res.setHeader('Content-Disposition', `attachment; filename=processo-${process.number}.pdf`);
 
     doc.pipe(res);
 
-    // Cabeçalho
     doc.fontSize(20).text('Relatório de Processo', { align: 'center' });
     doc.moveDown();
-
-    // Informações do processo
-    doc.fontSize(14).text('Informações do Processo');
     doc.fontSize(12).text(`Número: ${process.number}`);
     doc.text(`Título: ${process.title}`);
+    doc.text(`Descrição: ${process.description}`);
     doc.text(`Status: ${process.status}`);
-    doc.text(`Data de Criação: ${process.createdAt.toLocaleDateString()}`);
+    doc.text(`Cliente: ${process.client.name}`);
+    doc.text(`Responsável: ${process.user.name}`);
     doc.moveDown();
 
-    // Informações do cliente
-    doc.fontSize(14).text('Informações do Cliente');
-    doc.fontSize(12).text(`Nome: ${process.client.name}`);
-    doc.text(`Email: ${process.client.email}`);
-    doc.text(`Telefone: ${process.client.phone || 'Não informado'}`);
-    doc.moveDown();
-
-    // Tarefas
-    doc.fontSize(14).text('Tarefas');
+    doc.fontSize(16).text('Tarefas');
     process.tasks.forEach((task) => {
-      doc.fontSize(12).text(`- ${task.title} (${task.status})`);
-      if (task.description) {
-        doc.fontSize(10).text(`  ${task.description}`);
-      }
+      doc.fontSize(12).text(`- ${task.title}: ${task.status}`);
     });
-    doc.moveDown();
 
-    // Tags
-    if (process.tags.length > 0) {
-      doc.fontSize(14).text('Tags');
-      process.tags.forEach((tag) => {
-        doc.fontSize(12).text(`- ${tag.name}`);
-      });
-    }
+    doc.fontSize(16).text('Tags');
+    process.tags.forEach((tag) => {
+      doc.fontSize(12).text(`- ${tag.name}`);
+    });
 
     doc.end();
   } catch (error) {
-    console.error('Generate process report error:', error);
-    res.status(500).json({ message: 'Erro ao gerar relatório do processo' });
+    console.error('Erro ao gerar relatório:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
 
 export const generateClientReport = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { startDate, endDate } = req.body;
 
     const client = await prisma.client.findUnique({
-      where: { id },
+      where: { id: Number(id) },
       include: {
         processes: {
           include: {
@@ -95,39 +75,33 @@ export const generateClientReport = async (req: Request, res: Response) => {
 
     const doc = new PDFDocument();
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=client-${client.name}.pdf`);
+    res.setHeader('Content-Disposition', `attachment; filename=cliente-${client.name}.pdf`);
 
     doc.pipe(res);
 
-    // Cabeçalho
     doc.fontSize(20).text('Relatório de Cliente', { align: 'center' });
     doc.moveDown();
-
-    // Informações do cliente
-    doc.fontSize(14).text('Informações do Cliente');
     doc.fontSize(12).text(`Nome: ${client.name}`);
     doc.text(`Email: ${client.email}`);
-    doc.text(`Telefone: ${client.phone || 'Não informado'}`);
-    doc.text(`Documento: ${client.document || 'Não informado'}`);
-    doc.text(`Endereço: ${client.address || 'Não informado'}`);
+    doc.text(`Telefone: ${client.phone}`);
+    doc.text(`Documento: ${client.document}`);
+    doc.text(`Endereço: ${client.address}`);
     doc.moveDown();
 
-    // Processos
-    doc.fontSize(14).text('Processos');
+    doc.fontSize(16).text('Processos');
     client.processes.forEach((process) => {
-      doc.fontSize(12).text(`- ${process.number}: ${process.title} (${process.status})`);
-      if (process.description) {
-        doc.fontSize(10).text(`  ${process.description}`);
-      }
-      doc.text(`  Tarefas: ${process.tasks.length}`);
-      doc.text(`  Tags: ${process.tags.map((tag) => tag.name).join(', ')}`);
+      doc.fontSize(14).text(`Processo ${process.number}`);
+      doc.fontSize(12).text(`Título: ${process.title}`);
+      doc.text(`Status: ${process.status}`);
+      doc.text(`Tarefas: ${process.tasks.length}`);
+      doc.text(`Tags: ${process.tags.map((tag) => tag.name).join(', ')}`);
       doc.moveDown();
     });
 
     doc.end();
   } catch (error) {
-    console.error('Generate client report error:', error);
-    res.status(500).json({ message: 'Erro ao gerar relatório do cliente' });
+    console.error('Erro ao gerar relatório:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
 
