@@ -23,7 +23,7 @@ export const getProcessById = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const process = await prisma.process.findUnique({
-      where: { id: Number(id) },
+      where: { id },
       include: {
         client: true,
         user: true,
@@ -53,8 +53,8 @@ export const createProcess = async (req: Request, res: Response) => {
         title,
         description,
         status,
-        clientId: Number(clientId),
-        userId: Number(userId),
+        clientId,
+        userId,
       },
     });
 
@@ -71,14 +71,14 @@ export const updateProcess = async (req: Request, res: Response) => {
     const { number, title, description, status, clientId, userId } = req.body;
 
     const process = await prisma.process.update({
-      where: { id: Number(id) },
+      where: { id },
       data: {
         number,
         title,
         description,
         status,
-        clientId: Number(clientId),
-        userId: Number(userId),
+        clientId,
+        userId,
       },
     });
 
@@ -94,7 +94,7 @@ export const deleteProcess = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     await prisma.process.delete({
-      where: { id: Number(id) },
+      where: { id },
     });
 
     return res.status(204).send();

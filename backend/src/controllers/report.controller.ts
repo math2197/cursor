@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/database';
 import PDFDocument from 'pdfkit';
+import { Process, Client, Task, Tag } from '@prisma/client';
 
-export const generateProcessReport = async (req: Request, res: Response) => {
+export const generateProcessReport = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
 
     const process = await prisma.process.findUnique({
-      where: { id: Number(id) },
+      where: { id },
       include: {
         client: true,
         user: true,
@@ -17,7 +18,8 @@ export const generateProcessReport = async (req: Request, res: Response) => {
     });
 
     if (!process) {
-      return res.status(404).json({ message: 'Processo não encontrado' });
+      res.status(404).json({ message: 'Processo não encontrado' });
+      return;
     }
 
     const doc = new PDFDocument();
@@ -37,28 +39,28 @@ export const generateProcessReport = async (req: Request, res: Response) => {
     doc.moveDown();
 
     doc.fontSize(16).text('Tarefas');
-    process.tasks.forEach((task) => {
+    process.tasks.forEach((task: Task) => {
       doc.fontSize(12).text(`- ${task.title}: ${task.status}`);
     });
 
     doc.fontSize(16).text('Tags');
-    process.tags.forEach((tag) => {
+    process.tags.forEach((tag: Tag) => {
       doc.fontSize(12).text(`- ${tag.name}`);
     });
 
     doc.end();
   } catch (error) {
     console.error('Erro ao gerar relatório:', error);
-    return res.status(500).json({ message: 'Erro interno do servidor' });
+    res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
 
-export const generateClientReport = async (req: Request, res: Response) => {
+export const generateClientReport = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
 
     const client = await prisma.client.findUnique({
-      where: { id: Number(id) },
+      where: { id },
       include: {
         processes: {
           include: {
@@ -70,7 +72,8 @@ export const generateClientReport = async (req: Request, res: Response) => {
     });
 
     if (!client) {
-      return res.status(404).json({ message: 'Cliente não encontrado' });
+      res.status(404).json({ message: 'Cliente não encontrado' });
+      return;
     }
 
     const doc = new PDFDocument();
@@ -89,19 +92,19 @@ export const generateClientReport = async (req: Request, res: Response) => {
     doc.moveDown();
 
     doc.fontSize(16).text('Processos');
-    client.processes.forEach((process) => {
+    client.processes.forEach((process: Process & { tasks: Task[]; tags: Tag[] }) => {
       doc.fontSize(14).text(`Processo ${process.number}`);
       doc.fontSize(12).text(`Título: ${process.title}`);
       doc.text(`Status: ${process.status}`);
       doc.text(`Tarefas: ${process.tasks.length}`);
-      doc.text(`Tags: ${process.tags.map((tag) => tag.name).join(', ')}`);
+      doc.text(`Tags: ${process.tags.map((tag: Tag) => tag.name).join(', ')}`);
       doc.moveDown();
     });
 
     doc.end();
   } catch (error) {
     console.error('Erro ao gerar relatório:', error);
-    return res.status(500).json({ message: 'Erro interno do servidor' });
+    res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
 
