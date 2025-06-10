@@ -1,10 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
-
-// Importação das rotas
-import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 import clientRoutes from './routes/client.routes';
 import processRoutes from './routes/process.routes';
@@ -12,10 +8,12 @@ import taskRoutes from './routes/task.routes';
 import tagRoutes from './routes/tag.routes';
 import reportRoutes from './routes/report.routes';
 
+// Importação das rotas
+import authRoutes from './routes/auth.routes';
+
 dotenv.config();
 
 const app = express();
-const prisma = new PrismaClient();
 
 // Middlewares
 app.use(cors());

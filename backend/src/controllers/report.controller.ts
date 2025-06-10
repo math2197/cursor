@@ -6,15 +6,13 @@ import { Process, Client, Task, Tag } from '@prisma/client';
 export const generateProcessReport = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-
     const process = await prisma.process.findUnique({
       where: { id },
       include: {
         client: true,
-        user: true,
         tasks: true,
-        tags: true,
-      },
+        tags: true
+      }
     });
 
     if (!process) {
@@ -24,25 +22,43 @@ export const generateProcessReport = async (req: Request, res: Response): Promis
 
     const doc = new PDFDocument();
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=processo-${process.number}.pdf`);
-
+    res.setHeader('Content-Disposition', `attachment; filename=processo-${process.id}.pdf`);
     doc.pipe(res);
 
+    // Cabeçalho
     doc.fontSize(20).text('Relatório de Processo', { align: 'center' });
     doc.moveDown();
-    doc.fontSize(12).text(`Número: ${process.number}`);
-    doc.text(`Título: ${process.title}`);
-    doc.text(`Descrição: ${process.description}`);
-    doc.text(`Status: ${process.status}`);
-    doc.text(`Cliente: ${process.client.name}`);
-    doc.text(`Responsável: ${process.user.name}`);
+
+    // Informações do Processo
+    doc.fontSize(16).text('Informações do Processo');
+    doc.fontSize(12)
+      .text(`Número: ${process.number}`)
+      .text(`Título: ${process.title}`)
+      .text(`Descrição: ${process.description}`)
+      .text(`Status: ${process.status}`)
+      .text(`Data de Criação: ${process.createdAt.toLocaleDateString()}`)
+      .text(`Data de Atualização: ${process.updatedAt.toLocaleDateString()}`);
     doc.moveDown();
 
+    // Informações do Cliente
+    doc.fontSize(16).text('Informações do Cliente');
+    doc.fontSize(12)
+      .text(`Nome: ${process.client.name}`)
+      .text(`Email: ${process.client.email}`)
+      .text(`Telefone: ${process.client.phone}`);
+    doc.moveDown();
+
+    // Tarefas
     doc.fontSize(16).text('Tarefas');
     process.tasks.forEach((task: Task) => {
-      doc.fontSize(12).text(`- ${task.title}: ${task.status}`);
+      doc.fontSize(12)
+        .text(`- ${task.title}`)
+        .text(`  Status: ${task.status}`)
+        .text(`  Prazo: ${task.dueDate.toLocaleDateString()}`);
     });
+    doc.moveDown();
 
+    // Tags
     doc.fontSize(16).text('Tags');
     process.tags.forEach((tag: Tag) => {
       doc.fontSize(12).text(`- ${tag.name}`);
@@ -51,24 +67,23 @@ export const generateProcessReport = async (req: Request, res: Response): Promis
     doc.end();
   } catch (error) {
     console.error('Erro ao gerar relatório:', error);
-    res.status(500).json({ message: 'Erro interno do servidor' });
+    res.status(500).json({ message: 'Erro ao gerar relatório' });
   }
 };
 
 export const generateClientReport = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-
     const client = await prisma.client.findUnique({
       where: { id },
       include: {
         processes: {
           include: {
             tasks: true,
-            tags: true,
-          },
-        },
-      },
+            tags: true
+          }
+        }
+      }
     });
 
     if (!client) {
@@ -78,33 +93,53 @@ export const generateClientReport = async (req: Request, res: Response): Promise
 
     const doc = new PDFDocument();
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=cliente-${client.name}.pdf`);
-
+    res.setHeader('Content-Disposition', `attachment; filename=cliente-${client.id}.pdf`);
     doc.pipe(res);
 
+    // Cabeçalho
     doc.fontSize(20).text('Relatório de Cliente', { align: 'center' });
     doc.moveDown();
-    doc.fontSize(12).text(`Nome: ${client.name}`);
-    doc.text(`Email: ${client.email}`);
-    doc.text(`Telefone: ${client.phone}`);
-    doc.text(`Documento: ${client.document}`);
-    doc.text(`Endereço: ${client.address}`);
+
+    // Informações do Cliente
+    doc.fontSize(16).text('Informações do Cliente');
+    doc.fontSize(12)
+      .text(`Nome: ${client.name}`)
+      .text(`Email: ${client.email}`)
+      .text(`Telefone: ${client.phone}`);
     doc.moveDown();
 
+    // Processos
     doc.fontSize(16).text('Processos');
-    client.processes.forEach((process: Process & { tasks: Task[]; tags: Tag[] }) => {
+    client.processes.forEach((process: Process) => {
       doc.fontSize(14).text(`Processo ${process.number}`);
-      doc.fontSize(12).text(`Título: ${process.title}`);
-      doc.text(`Status: ${process.status}`);
-      doc.text(`Tarefas: ${process.tasks.length}`);
-      doc.text(`Tags: ${process.tags.map((tag: Tag) => tag.name).join(', ')}`);
+      doc.fontSize(12)
+        .text(`Título: ${process.title}`)
+        .text(`Status: ${process.status}`)
+        .text(`Data de Criação: ${process.createdAt.toLocaleDateString()}`);
+      doc.moveDown();
+
+      // Tarefas do Processo
+      doc.fontSize(12).text('Tarefas:');
+      process.tasks.forEach((task: Task) => {
+        doc.fontSize(10)
+          .text(`- ${task.title}`)
+          .text(`  Status: ${task.status}`)
+          .text(`  Prazo: ${task.dueDate.toLocaleDateString()}`);
+      });
+      doc.moveDown();
+
+      // Tags do Processo
+      doc.fontSize(12).text('Tags:');
+      process.tags.forEach((tag: Tag) => {
+        doc.fontSize(10).text(`- ${tag.name}`);
+      });
       doc.moveDown();
     });
 
     doc.end();
   } catch (error) {
     console.error('Erro ao gerar relatório:', error);
-    res.status(500).json({ message: 'Erro interno do servidor' });
+    res.status(500).json({ message: 'Erro ao gerar relatório' });
   }
 };
 

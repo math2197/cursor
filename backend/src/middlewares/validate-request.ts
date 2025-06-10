@@ -1,16 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
-import { validationResult } from 'express-validator';
+import { Schema } from 'joi';
 
-export const validateRequest = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const errors = validationResult(req);
+export const validateRequest = (schema: Schema) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const { error } = schema.validate(req.body);
 
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+    if (error) {
+      res.status(400).json({ message: error.details[0].message });
+      return;
+    }
 
-  next();
+    next();
+  };
 }; 

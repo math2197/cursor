@@ -1,13 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Role } from '@prisma/client';
 
 interface TokenPayload {
   id: string;
   email: string;
-  role: string;
+  role: Role;
 }
 
 declare global {
@@ -18,39 +16,49 @@ declare global {
   }
 }
 
-export const authMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { authorization } = req.headers;
+export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+  const authHeader = req.headers.authorization;
 
-  if (!authorization) {
-    return res.status(401).json({ message: 'Token não fornecido' });
+  if (!authHeader) {
+    res.status(401).json({ message: 'Token não fornecido' });
+    return;
   }
 
-  const token = authorization.replace('Bearer', '').trim();
+  const parts = authHeader.split(' ');
+
+  if (parts.length !== 2) {
+    res.status(401).json({ message: 'Token mal formatado' });
+    return;
+  }
+
+  const [scheme, token] = parts;
+
+  if (!/^Bearer$/i.test(scheme)) {
+    res.status(401).json({ message: 'Token mal formatado' });
+    return;
+  }
 
   try {
-    const data = jwt.verify(token, process.env.JWT_SECRET || 'default_secret');
-    const { id, email, role } = data as TokenPayload;
-
-    req.user = { id, email, role };
-
-    return next();
-  } catch {
-    return res.status(401).json({ message: 'Token inválido' });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret') as TokenPayload;
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Token inválido' });
   }
 };
 
-export const adminMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  if (req.user?.role !== 'ADMIN') {
-    return res.status(403).json({ message: 'Acesso negado' });
-  }
+export const roleMiddleware = (roles: Role[]) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    if (!req.user) {
+      res.status(401).json({ message: 'Usuário não autenticado' });
+      return;
+    }
 
-  return next();
+    if (!roles.includes(req.user.role)) {
+      res.status(403).json({ message: 'Acesso negado' });
+      return;
+    }
+
+    next();
+  };
 }; 
