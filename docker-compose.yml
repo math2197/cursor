@@ -1,47 +1,42 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:14
-    container_name: legal-system-postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: legal_system
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: legal-system-backend
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/legal_system
-      JWT_SECRET: your_jwt_secret
-      PORT: 3001
-    ports:
-      - "3001:3001"
-    depends_on:
-      - postgres
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: legal-system-frontend
-    environment:
-      REACT_APP_API_URL: http://localhost:3001
+    build: ./frontend
     ports:
       - "3000:3000"
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://localhost:3001
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/legal_system?schema=public
+      - JWT_SECRET=sua_chave_secreta_muito_segura
+      - PORT=3001
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=legal_system
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data: 

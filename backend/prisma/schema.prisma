@@ -7,63 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
+enum ProcessStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
 model User {
-  id        String    @id @default(uuid())
-  name      String
-  email     String    @unique
-  password  String
-  role      String    @default("USER")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  tasks     Task[]
-}
-
-model Client {
-  id        String    @id @default(uuid())
-  name      String
-  email     String    @unique
-  phone     String?
-  address   String?
-  document  String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  processes Process[]
-}
-
-model Process {
-  id          String    @id @default(uuid())
-  number      String    @unique
-  title       String
-  description String?
-  status      String    @default("PENDING")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  client      Client    @relation(fields: [clientId], references: [id])
-  clientId    String
-  tasks       Task[]
-  tags        Tag[]
-}
-
-model Task {
-  id          String    @id @default(uuid())
-  title       String
-  description String?
-  status      String    @default("PENDING")
-  dueDate     DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  process     Process   @relation(fields: [processId], references: [id])
-  processId   String
-  user        User      @relation(fields: [userId], references: [id])
-  userId      String
-}
-
-model Tag {
-  id        String    @id @default(uuid())
-  name      String    @unique
-  color     String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
   id            String    @id @default(uuid())
   name          String
   email         String    @unique
@@ -77,69 +39,54 @@ model Tag {
 }
 
 model Client {
-  id            String    @id @default(uuid())
-  name          String
-  email         String    @unique
-  phone         String?
-  document      String    @unique
-  address       String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  processes     Process[]
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  phone     String?
+  document  String?
+  address   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  processes Process[]
 }
 
 model Process {
-  id            String    @id @default(uuid())
-  number        String    @unique
-  title         String
-  description   String?
-  status        ProcessStatus @default(ACTIVE)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  clients       Client[]
-  tasks         Task[]
-  tags          Tag[]
-  user          User      @relation(fields: [userId], references: [id])
-  userId        String
+  id          String        @id @default(uuid())
+  number      String        @unique
+  title       String
+  description String?
+  status      ProcessStatus @default(PENDING)
+  clientId    String
+  userId      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  client      Client        @relation(fields: [clientId], references: [id])
+  user        User          @relation(fields: [userId], references: [id])
+  tasks       Task[]
+  tags        Tag[]
 }
 
 model Task {
-  id            String    @id @default(uuid())
-  title         String
-  description   String?
-  status        TaskStatus @default(PENDING)
-  dueDate       DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  process       Process   @relation(fields: [processId], references: [id])
-  processId     String
-  user          User      @relation(fields: [userId], references: [id])
-  userId        String
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  dueDate     DateTime?
+  processId   String
+  userId      String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  process     Process    @relation(fields: [processId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
+  tags        Tag[]
 }
 
 model Tag {
-  id            String    @id @default(uuid())
-  name          String    @unique
-  color         String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  processes     Process[]
-}
-
-enum Role {
-  ADMIN
-  USER
-}
-
-enum ProcessStatus {
-  ACTIVE
-  ARCHIVED
-  CLOSED
-}
-
-enum TaskStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
+  id        String    @id @default(uuid())
+  name      String    @unique
+  color     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  processes Process[]
+  tasks     Task[]
 } 
