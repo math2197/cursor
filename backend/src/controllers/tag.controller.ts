@@ -1,20 +1,13 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/database';
 
-const prisma = new PrismaClient();
-
-export const getTags = async (req: Request, res: Response) => {
+export const getTags = async (_req: Request, res: Response) => {
   try {
-    const tags = await prisma.tag.findMany({
-      include: {
-        processes: true,
-      },
-    });
-
-    res.json(tags);
+    const tags = await prisma.tag.findMany();
+    return res.json(tags);
   } catch (error) {
-    console.error('Get tags error:', error);
-    res.status(500).json({ message: 'Erro ao buscar tags' });
+    console.error('Erro ao buscar tags:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
 
@@ -24,33 +17,22 @@ export const getTagById = async (req: Request, res: Response) => {
 
     const tag = await prisma.tag.findUnique({
       where: { id },
-      include: {
-        processes: true,
-      },
     });
 
     if (!tag) {
       return res.status(404).json({ message: 'Tag não encontrada' });
     }
 
-    res.json(tag);
+    return res.json(tag);
   } catch (error) {
-    console.error('Get tag error:', error);
-    res.status(500).json({ message: 'Erro ao buscar tag' });
+    console.error('Erro ao buscar tag:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
 
 export const createTag = async (req: Request, res: Response) => {
   try {
     const { name, color } = req.body;
-
-    const existingTag = await prisma.tag.findUnique({
-      where: { name },
-    });
-
-    if (existingTag) {
-      return res.status(400).json({ message: 'Tag já existe' });
-    }
 
     const tag = await prisma.tag.create({
       data: {
@@ -59,10 +41,10 @@ export const createTag = async (req: Request, res: Response) => {
       },
     });
 
-    res.status(201).json(tag);
+    return res.status(201).json(tag);
   } catch (error) {
-    console.error('Create tag error:', error);
-    res.status(500).json({ message: 'Erro ao criar tag' });
+    console.error('Erro ao criar tag:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
 
@@ -71,25 +53,7 @@ export const updateTag = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { name, color } = req.body;
 
-    const tag = await prisma.tag.findUnique({
-      where: { id },
-    });
-
-    if (!tag) {
-      return res.status(404).json({ message: 'Tag não encontrada' });
-    }
-
-    if (name && name !== tag.name) {
-      const existingTag = await prisma.tag.findUnique({
-        where: { name },
-      });
-
-      if (existingTag) {
-        return res.status(400).json({ message: 'Tag já existe' });
-      }
-    }
-
-    const updatedTag = await prisma.tag.update({
+    const tag = await prisma.tag.update({
       where: { id },
       data: {
         name,
@@ -97,10 +61,10 @@ export const updateTag = async (req: Request, res: Response) => {
       },
     });
 
-    res.json(updatedTag);
+    return res.json(tag);
   } catch (error) {
-    console.error('Update tag error:', error);
-    res.status(500).json({ message: 'Erro ao atualizar tag' });
+    console.error('Erro ao atualizar tag:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
 
@@ -108,21 +72,13 @@ export const deleteTag = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const tag = await prisma.tag.findUnique({
-      where: { id },
-    });
-
-    if (!tag) {
-      return res.status(404).json({ message: 'Tag não encontrada' });
-    }
-
     await prisma.tag.delete({
       where: { id },
     });
 
-    res.status(204).send();
+    return res.status(204).send();
   } catch (error) {
-    console.error('Delete tag error:', error);
-    res.status(500).json({ message: 'Erro ao deletar tag' });
+    console.error('Erro ao deletar tag:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 }; 

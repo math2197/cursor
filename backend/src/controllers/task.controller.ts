@@ -1,21 +1,19 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/database';
 
-const prisma = new PrismaClient();
-
-export const getTasks = async (req: Request, res: Response) => {
+export const getTasks = async (_req: Request, res: Response) => {
   try {
     const tasks = await prisma.task.findMany({
       include: {
         process: true,
         user: true,
+        tags: true,
       },
     });
-
-    res.json(tasks);
+    return res.json(tasks);
   } catch (error) {
-    console.error('Get tasks error:', error);
-    res.status(500).json({ message: 'Erro ao buscar tarefas' });
+    console.error('Erro ao buscar tarefas:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
 
@@ -28,6 +26,7 @@ export const getTaskById = async (req: Request, res: Response) => {
       include: {
         process: true,
         user: true,
+        tags: true,
       },
     });
 
@@ -35,29 +34,16 @@ export const getTaskById = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Tarefa não encontrada' });
     }
 
-    res.json(task);
+    return res.json(task);
   } catch (error) {
-    console.error('Get task error:', error);
-    res.status(500).json({ message: 'Erro ao buscar tarefa' });
+    console.error('Erro ao buscar tarefa:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
 
 export const createTask = async (req: Request, res: Response) => {
   try {
-    const { title, description, status, dueDate, processId } = req.body;
-    const userId = req.user?.id;
-
-    if (!userId) {
-      return res.status(401).json({ message: 'Usuário não autenticado' });
-    }
-
-    const process = await prisma.process.findUnique({
-      where: { id: processId },
-    });
-
-    if (!process) {
-      return res.status(404).json({ message: 'Processo não encontrado' });
-    }
+    const { title, description, status, dueDate, processId, userId } = req.body;
 
     const task = await prisma.task.create({
       data: {
@@ -68,43 +54,21 @@ export const createTask = async (req: Request, res: Response) => {
         processId,
         userId,
       },
-      include: {
-        process: true,
-        user: true,
-      },
     });
 
-    res.status(201).json(task);
+    return res.status(201).json(task);
   } catch (error) {
-    console.error('Create task error:', error);
-    res.status(500).json({ message: 'Erro ao criar tarefa' });
+    console.error('Erro ao criar tarefa:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
 
 export const updateTask = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { title, description, status, dueDate, processId } = req.body;
+    const { title, description, status, dueDate, processId, userId } = req.body;
 
-    const task = await prisma.task.findUnique({
-      where: { id },
-    });
-
-    if (!task) {
-      return res.status(404).json({ message: 'Tarefa não encontrada' });
-    }
-
-    if (processId) {
-      const process = await prisma.process.findUnique({
-        where: { id: processId },
-      });
-
-      if (!process) {
-        return res.status(404).json({ message: 'Processo não encontrado' });
-      }
-    }
-
-    const updatedTask = await prisma.task.update({
+    const task = await prisma.task.update({
       where: { id },
       data: {
         title,
@@ -112,17 +76,14 @@ export const updateTask = async (req: Request, res: Response) => {
         status,
         dueDate,
         processId,
-      },
-      include: {
-        process: true,
-        user: true,
+        userId,
       },
     });
 
-    res.json(updatedTask);
+    return res.json(task);
   } catch (error) {
-    console.error('Update task error:', error);
-    res.status(500).json({ message: 'Erro ao atualizar tarefa' });
+    console.error('Erro ao atualizar tarefa:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
 
@@ -159,21 +120,13 @@ export const deleteTask = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const task = await prisma.task.findUnique({
-      where: { id },
-    });
-
-    if (!task) {
-      return res.status(404).json({ message: 'Tarefa não encontrada' });
-    }
-
     await prisma.task.delete({
       where: { id },
     });
 
-    res.status(204).send();
+    return res.status(204).send();
   } catch (error) {
-    console.error('Delete task error:', error);
-    res.status(500).json({ message: 'Erro ao deletar tarefa' });
+    console.error('Erro ao deletar tarefa:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 }; 
