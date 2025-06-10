@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
+import Joi from 'joi';
 import {
   getTasks,
   getTaskById,
@@ -9,45 +9,28 @@ import {
   updateTaskStatus,
 } from '../controllers/task.controller';
 import { validateRequest } from '../middlewares/validate-request';
-import { authMiddleware } from '../middlewares/auth.middleware';
+import { authMiddleware, roleMiddleware } from '../middlewares/auth.middleware';
+import { Role } from '@prisma/client';
 
 const router = Router();
+
+const taskSchema = Joi.object({
+  title: Joi.string().required(),
+  description: Joi.string().allow(null, ''),
+  status: Joi.string().valid('PENDING', 'IN_PROGRESS', 'COMPLETED').required(),
+  dueDate: Joi.date().required(),
+  processId: Joi.string().required(),
+  assignedToId: Joi.string().required()
+});
 
 router.use(authMiddleware);
 
 router.get('/', getTasks);
 router.get('/:id', getTaskById);
 
-router.post(
-  '/',
-  [
-    body('title').notEmpty().withMessage('Título é obrigatório'),
-    body('description').optional(),
-    body('status')
-      .isIn(['PENDING', 'IN_PROGRESS', 'COMPLETED'])
-      .withMessage('Status inválido'),
-    body('dueDate').optional().isISO8601().withMessage('Data inválida'),
-    body('processId').notEmpty().withMessage('Processo é obrigatório'),
-  ],
-  validateRequest,
-  createTask
-);
+router.post('/', validateRequest(taskSchema), createTask);
 
-router.put(
-  '/:id',
-  [
-    body('title').optional().notEmpty().withMessage('Título não pode ser vazio'),
-    body('description').optional(),
-    body('status')
-      .optional()
-      .isIn(['PENDING', 'IN_PROGRESS', 'COMPLETED'])
-      .withMessage('Status inválido'),
-    body('dueDate').optional().isISO8601().withMessage('Data inválida'),
-    body('processId').optional().notEmpty().withMessage('Processo não pode ser vazio'),
-  ],
-  validateRequest,
-  updateTask
-);
+router.put('/:id', validateRequest(taskSchema), updateTask);
 
 router.patch(
   '/:id/status',
@@ -60,6 +43,6 @@ router.patch(
   updateTaskStatus
 );
 
-router.delete('/:id', deleteTask);
+router.delete('/:id', roleMiddleware([Role.ADMIN]), deleteTask);
 
 export default router; 

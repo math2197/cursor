@@ -34,7 +34,7 @@ export const generateProcessReport = async (req: Request, res: Response): Promis
     doc.fontSize(12)
       .text(`Número: ${process.number}`)
       .text(`Título: ${process.title}`)
-      .text(`Descrição: ${process.description}`)
+      .text(`Descrição: ${process.description || 'N/A'}`)
       .text(`Status: ${process.status}`)
       .text(`Data de Criação: ${process.createdAt.toLocaleDateString()}`)
       .text(`Data de Atualização: ${process.updatedAt.toLocaleDateString()}`);
@@ -54,7 +54,7 @@ export const generateProcessReport = async (req: Request, res: Response): Promis
       doc.fontSize(12)
         .text(`- ${task.title}`)
         .text(`  Status: ${task.status}`)
-        .text(`  Prazo: ${task.dueDate.toLocaleDateString()}`);
+        .text(`  Prazo: ${task.dueDate ? task.dueDate.toLocaleDateString() : 'N/A'}`);
     });
     doc.moveDown();
 
@@ -110,7 +110,7 @@ export const generateClientReport = async (req: Request, res: Response): Promise
 
     // Processos
     doc.fontSize(16).text('Processos');
-    client.processes.forEach((process: Process) => {
+    client.processes.forEach((process: Process & { tasks: Task[]; tags: Tag[] }) => {
       doc.fontSize(14).text(`Processo ${process.number}`);
       doc.fontSize(12)
         .text(`Título: ${process.title}`)
@@ -124,7 +124,7 @@ export const generateClientReport = async (req: Request, res: Response): Promise
         doc.fontSize(10)
           .text(`- ${task.title}`)
           .text(`  Status: ${task.status}`)
-          .text(`  Prazo: ${task.dueDate.toLocaleDateString()}`);
+          .text(`  Prazo: ${task.dueDate ? task.dueDate.toLocaleDateString() : 'N/A'}`);
       });
       doc.moveDown();
 

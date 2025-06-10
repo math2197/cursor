@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
+import Joi from 'joi';
 import {
   createTag,
   getTags,
@@ -7,10 +7,16 @@ import {
   updateTag,
   deleteTag,
 } from '../controllers/tag.controller';
+import { authMiddleware, roleMiddleware } from '../middlewares/auth.middleware';
 import { validateRequest } from '../middlewares/validate-request';
-import { authMiddleware } from '../middlewares/auth.middleware';
+import { Role } from '@prisma/client';
 
 const router = Router();
+
+const tagSchema = Joi.object({
+  name: Joi.string().required(),
+  color: Joi.string().required()
+});
 
 router.use(authMiddleware);
 
@@ -18,26 +24,10 @@ router.get('/', getTags);
 
 router.get('/:id', getTagById);
 
-router.post(
-  '/',
-  [
-    body('name').notEmpty().withMessage('Nome é obrigatório'),
-    body('color').notEmpty().withMessage('Cor é obrigatória'),
-  ],
-  validateRequest,
-  createTag
-);
+router.post('/', validateRequest(tagSchema), createTag);
 
-router.put(
-  '/:id',
-  [
-    body('name').optional().notEmpty().withMessage('Nome não pode ser vazio'),
-    body('color').optional().notEmpty().withMessage('Cor não pode ser vazia'),
-  ],
-  validateRequest,
-  updateTag
-);
+router.put('/:id', validateRequest(tagSchema), updateTag);
 
-router.delete('/:id', deleteTag);
+router.delete('/:id', roleMiddleware([Role.ADMIN]), deleteTag);
 
 export default router; 

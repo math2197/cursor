@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
+import Joi from 'joi';
 import {
   getProcesses,
   getProcessById,
@@ -10,47 +10,30 @@ import {
   removeTagFromProcess,
 } from '../controllers/process.controller';
 import { validateRequest } from '../middlewares/validate-request';
-import { authMiddleware } from '../middlewares/auth.middleware';
+import { authMiddleware, roleMiddleware } from '../middlewares/auth.middleware';
+import { Role } from '@prisma/client';
 
 const router = Router();
+
+const processSchema = Joi.object({
+  number: Joi.string().required(),
+  title: Joi.string().required(),
+  description: Joi.string().allow(null, ''),
+  status: Joi.string().valid('PENDING', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED').required(),
+  clientId: Joi.string().required(),
+  userId: Joi.string().required()
+});
 
 router.use(authMiddleware);
 
 router.get('/', getProcesses);
 router.get('/:id', getProcessById);
 
-router.post(
-  '/',
-  [
-    body('number').notEmpty().withMessage('Número é obrigatório'),
-    body('title').notEmpty().withMessage('Título é obrigatório'),
-    body('description').optional(),
-    body('status')
-      .isIn(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED'])
-      .withMessage('Status inválido'),
-    body('clientId').notEmpty().withMessage('Cliente é obrigatório'),
-  ],
-  validateRequest,
-  createProcess
-);
+router.post('/', validateRequest(processSchema), createProcess);
 
-router.put(
-  '/:id',
-  [
-    body('number').optional().notEmpty().withMessage('Número não pode ser vazio'),
-    body('title').optional().notEmpty().withMessage('Título não pode ser vazio'),
-    body('description').optional(),
-    body('status')
-      .optional()
-      .isIn(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED'])
-      .withMessage('Status inválido'),
-    body('clientId').optional().notEmpty().withMessage('Cliente não pode ser vazio'),
-  ],
-  validateRequest,
-  updateProcess
-);
+router.put('/:id', validateRequest(processSchema), updateProcess);
 
-router.delete('/:id', deleteProcess);
+router.delete('/:id', roleMiddleware([Role.ADMIN]), deleteProcess);
 
 router.post(
   '/:id/tags/:tagId',
