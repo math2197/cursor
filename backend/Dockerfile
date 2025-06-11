@@ -16,8 +16,8 @@ RUN npm install
 # Copiar código fonte
 COPY src ./src/
 
-# Limpar build anterior e gerar cliente Prisma
-RUN rm -rf dist && npx prisma generate
+# Gerar cliente Prisma
+RUN npx prisma generate
 
 # Compilar TypeScript
 RUN npm run build
@@ -25,8 +25,11 @@ RUN npm run build
 # Verificar se o build foi bem sucedido
 RUN ls -la dist/
 
-# Remover node_modules e reinstalar apenas as dependências de produção
-RUN rm -rf node_modules && npm install --production
+# Remover arquivos desnecessários
+RUN rm -rf src node_modules
+
+# Reinstalar apenas as dependências de produção
+RUN npm install --production
 
 EXPOSE 3001
 
