@@ -108,17 +108,18 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-export const updateTaskStatus = async (req: Request, res: Response) => {
+export const updateTaskStatus = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
     const task = await prisma.task.findUnique({
-      where: { id },
+      where: { id }
     });
 
     if (!task) {
-      return res.status(404).json({ message: 'Tarefa não encontrada' });
+      res.status(404).json({ message: 'Tarefa não encontrada' });
+      return;
     }
 
     const updatedTask = await prisma.task.update({
@@ -126,13 +127,13 @@ export const updateTaskStatus = async (req: Request, res: Response) => {
       data: { status },
       include: {
         process: true,
-        user: true,
-      },
+        assignedTo: true
+      }
     });
 
     res.json(updatedTask);
   } catch (error) {
-    console.error('Update task status error:', error);
+    console.error('Erro ao atualizar status da tarefa:', error);
     res.status(500).json({ message: 'Erro ao atualizar status da tarefa' });
   }
 };

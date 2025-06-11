@@ -29,7 +29,7 @@ app.use('/api/tags', tagRoutes);
 app.use('/api/reports', reportRoutes);
 
 // Rota de teste
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'Servidor funcionando!' });
 });
 

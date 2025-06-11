@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../config/database';
 import { Role } from '@prisma/client';
@@ -233,7 +233,6 @@ export const updateProfile = async (req: Request, res: Response) => {
         name: true,
         email: true,
         role: true,
-        profileImage: true,
         createdAt: true,
         updatedAt: true,
       },

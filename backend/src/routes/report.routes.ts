@@ -1,45 +1,18 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
-import {
-  generateProcessReport,
-  generateClientReport,
-  generateTaskReport,
-} from '../controllers/report.controller';
-import { validateRequest } from '../middlewares/validate-request';
+import Joi from 'joi';
+import { generateProcessReport, generateClientReport } from '../controllers/report.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
+import { validateRequest } from '../middlewares/validate-request';
 
 const router = Router();
 
+const idSchema = Joi.object({
+  id: Joi.string().required()
+});
+
 router.use(authMiddleware);
 
-router.post(
-  '/process/:id',
-  [
-    body('startDate').optional().isISO8601().withMessage('Data inicial inválida'),
-    body('endDate').optional().isISO8601().withMessage('Data final inválida'),
-  ],
-  validateRequest,
-  generateProcessReport
-);
-
-router.post(
-  '/client/:id',
-  [
-    body('startDate').optional().isISO8601().withMessage('Data inicial inválida'),
-    body('endDate').optional().isISO8601().withMessage('Data final inválida'),
-  ],
-  validateRequest,
-  generateClientReport
-);
-
-router.post(
-  '/task/:id',
-  [
-    body('startDate').optional().isISO8601().withMessage('Data inicial inválida'),
-    body('endDate').optional().isISO8601().withMessage('Data final inválida'),
-  ],
-  validateRequest,
-  generateTaskReport
-);
+router.get('/process/:id', validateRequest(idSchema), generateProcessReport);
+router.get('/client/:id', validateRequest(idSchema), generateClientReport);
 
 export default router; 

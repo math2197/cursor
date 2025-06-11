@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/database';
 import PDFDocument from 'pdfkit';
-import { Process, Client, Task, Tag } from '@prisma/client';
 
 export const generateProcessReport = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -10,7 +9,12 @@ export const generateProcessReport = async (req: Request, res: Response): Promis
       where: { id },
       include: {
         client: true,
-        tasks: true,
+        tasks: {
+          include: {
+            assignedTo: true,
+            tags: true
+          }
+        },
         tags: true
       }
     });
@@ -50,17 +54,18 @@ export const generateProcessReport = async (req: Request, res: Response): Promis
 
     // Tarefas
     doc.fontSize(16).text('Tarefas');
-    process.tasks.forEach((task: Task) => {
+    process.tasks.forEach((task) => {
       doc.fontSize(12)
         .text(`- ${task.title}`)
         .text(`  Status: ${task.status}`)
-        .text(`  Prazo: ${task.dueDate ? task.dueDate.toLocaleDateString() : 'N/A'}`);
+        .text(`  Prazo: ${task.dueDate ? task.dueDate.toLocaleDateString() : 'N/A'}`)
+        .text(`  Responsável: ${task.assignedTo.name}`);
     });
     doc.moveDown();
 
     // Tags
     doc.fontSize(16).text('Tags');
-    process.tags.forEach((tag: Tag) => {
+    process.tags.forEach((tag) => {
       doc.fontSize(12).text(`- ${tag.name}`);
     });
 
@@ -79,7 +84,12 @@ export const generateClientReport = async (req: Request, res: Response): Promise
       include: {
         processes: {
           include: {
-            tasks: true,
+            tasks: {
+              include: {
+                assignedTo: true,
+                tags: true
+              }
+            },
             tags: true
           }
         }
@@ -110,7 +120,7 @@ export const generateClientReport = async (req: Request, res: Response): Promise
 
     // Processos
     doc.fontSize(16).text('Processos');
-    client.processes.forEach((process: Process & { tasks: Task[]; tags: Tag[] }) => {
+    client.processes.forEach((process) => {
       doc.fontSize(14).text(`Processo ${process.number}`);
       doc.fontSize(12)
         .text(`Título: ${process.title}`)
@@ -120,17 +130,18 @@ export const generateClientReport = async (req: Request, res: Response): Promise
 
       // Tarefas do Processo
       doc.fontSize(12).text('Tarefas:');
-      process.tasks.forEach((task: Task) => {
+      process.tasks.forEach((task) => {
         doc.fontSize(10)
           .text(`- ${task.title}`)
           .text(`  Status: ${task.status}`)
-          .text(`  Prazo: ${task.dueDate ? task.dueDate.toLocaleDateString() : 'N/A'}`);
+          .text(`  Prazo: ${task.dueDate ? task.dueDate.toLocaleDateString() : 'N/A'}`)
+          .text(`  Responsável: ${task.assignedTo.name}`);
       });
       doc.moveDown();
 
       // Tags do Processo
       doc.fontSize(12).text('Tags:');
-      process.tags.forEach((tag: Tag) => {
+      process.tags.forEach((tag) => {
         doc.fontSize(10).text(`- ${tag.name}`);
       });
       doc.moveDown();
@@ -143,31 +154,30 @@ export const generateClientReport = async (req: Request, res: Response): Promise
   }
 };
 
-export const generateTaskReport = async (req: Request, res: Response) => {
+export const generateTaskReport = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { startDate, endDate } = req.body;
 
     const task = await prisma.task.findUnique({
       where: { id },
       include: {
         process: {
           include: {
-            client: true,
-          },
+            client: true
+          }
         },
-        user: true,
-      },
+        assignedTo: true
+      }
     });
 
     if (!task) {
-      return res.status(404).json({ message: 'Tarefa não encontrada' });
+      res.status(404).json({ message: 'Tarefa não encontrada' });
+      return;
     }
 
     const doc = new PDFDocument();
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=task-${task.id}.pdf`);
-
     doc.pipe(res);
 
     // Cabeçalho
@@ -176,9 +186,11 @@ export const generateTaskReport = async (req: Request, res: Response) => {
 
     // Informações da tarefa
     doc.fontSize(14).text('Informações da Tarefa');
-    doc.fontSize(12).text(`Título: ${task.title}`);
-    doc.text(`Status: ${task.status}`);
-    doc.text(`Data de Criação: ${task.createdAt.toLocaleDateString()}`);
+    doc.fontSize(12)
+      .text(`Título: ${task.title}`)
+      .text(`Status: ${task.status}`)
+      .text(`Data de Criação: ${task.createdAt.toLocaleDateString()}`);
+    
     if (task.dueDate) {
       doc.text(`Data de Vencimento: ${task.dueDate.toLocaleDateString()}`);
     }
@@ -187,27 +199,30 @@ export const generateTaskReport = async (req: Request, res: Response) => {
     }
     doc.moveDown();
 
-    // Informações do processo
+    // Informações do Processo
     doc.fontSize(14).text('Informações do Processo');
-    doc.fontSize(12).text(`Número: ${task.process.number}`);
-    doc.text(`Título: ${task.process.title}`);
-    doc.text(`Status: ${task.process.status}`);
+    doc.fontSize(12)
+      .text(`Número: ${task.process.number}`)
+      .text(`Título: ${task.process.title}`)
+      .text(`Status: ${task.process.status}`);
     doc.moveDown();
 
-    // Informações do cliente
+    // Informações do Cliente
     doc.fontSize(14).text('Informações do Cliente');
-    doc.fontSize(12).text(`Nome: ${task.process.client.name}`);
-    doc.text(`Email: ${task.process.client.email}`);
+    doc.fontSize(12)
+      .text(`Nome: ${task.process.client.name}`)
+      .text(`Email: ${task.process.client.email}`);
     doc.moveDown();
 
-    // Responsável
+    // Informações do Responsável
     doc.fontSize(14).text('Responsável');
-    doc.fontSize(12).text(`Nome: ${task.user.name}`);
-    doc.text(`Email: ${task.user.email}`);
+    doc.fontSize(12)
+      .text(`Nome: ${task.assignedTo.name}`)
+      .text(`Email: ${task.assignedTo.email}`);
 
     doc.end();
   } catch (error) {
-    console.error('Generate task report error:', error);
-    res.status(500).json({ message: 'Erro ao gerar relatório da tarefa' });
+    console.error('Erro ao gerar relatório:', error);
+    res.status(500).json({ message: 'Erro ao gerar relatório' });
   }
 }; 

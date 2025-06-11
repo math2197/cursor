@@ -5,8 +5,8 @@ import {
   getTaskById,
   createTask,
   updateTask,
-  deleteTask,
   updateTaskStatus,
+  deleteTask
 } from '../controllers/task.controller';
 import { validateRequest } from '../middlewares/validate-request';
 import { authMiddleware, roleMiddleware } from '../middlewares/auth.middleware';
@@ -14,35 +14,35 @@ import { Role } from '@prisma/client';
 
 const router = Router();
 
+// Validação
 const taskSchema = Joi.object({
   title: Joi.string().required(),
-  description: Joi.string().allow(null, ''),
+  description: Joi.string().optional(),
   status: Joi.string().valid('PENDING', 'IN_PROGRESS', 'COMPLETED').required(),
-  dueDate: Joi.date().required(),
+  dueDate: Joi.date().optional(),
   processId: Joi.string().required(),
   assignedToId: Joi.string().required()
 });
 
-router.use(authMiddleware);
+const updateTaskSchema = Joi.object({
+  title: Joi.string().optional(),
+  description: Joi.string().optional(),
+  status: Joi.string().valid('PENDING', 'IN_PROGRESS', 'COMPLETED').optional(),
+  dueDate: Joi.date().optional(),
+  processId: Joi.string().optional(),
+  assignedToId: Joi.string().optional()
+});
 
-router.get('/', getTasks);
-router.get('/:id', getTaskById);
+const updateStatusSchema = Joi.object({
+  status: Joi.string().valid('PENDING', 'IN_PROGRESS', 'COMPLETED').required()
+});
 
-router.post('/', validateRequest(taskSchema), createTask);
-
-router.put('/:id', validateRequest(taskSchema), updateTask);
-
-router.patch(
-  '/:id/status',
-  [
-    body('status')
-      .isIn(['PENDING', 'IN_PROGRESS', 'COMPLETED'])
-      .withMessage('Status inválido'),
-  ],
-  validateRequest,
-  updateTaskStatus
-);
-
-router.delete('/:id', roleMiddleware([Role.ADMIN]), deleteTask);
+// Rotas
+router.get('/', authMiddleware, getTasks);
+router.get('/:id', authMiddleware, getTaskById);
+router.post('/', authMiddleware, validateRequest(taskSchema), createTask);
+router.put('/:id', authMiddleware, validateRequest(updateTaskSchema), updateTask);
+router.patch('/:id/status', authMiddleware, validateRequest(updateStatusSchema), updateTaskStatus);
+router.delete('/:id', authMiddleware, roleMiddleware([Role.ADMIN]), deleteTask);
 
 export default router; 

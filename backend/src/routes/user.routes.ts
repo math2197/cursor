@@ -7,37 +7,25 @@ import { Role } from '@prisma/client';
 
 const router = Router();
 
+// Validação
 const userSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
-  role: Joi.string().valid('ADMIN', 'USER').required()
+  role: Joi.string().valid('ADMIN', 'USER').default('USER')
 });
 
-const profileSchema = Joi.object({
-  name: Joi.string().optional().notEmpty().messages({
-    'string.empty': 'Nome não pode ser vazio'
-  }),
-  email: Joi.string().optional().email().messages({
-    'string.email': 'Email inválido'
-  })
+const updateUserSchema = Joi.object({
+  name: Joi.string().optional(),
+  email: Joi.string().email().optional(),
+  role: Joi.string().valid('ADMIN', 'USER').optional()
 });
 
-const passwordSchema = Joi.object({
-  currentPassword: Joi.string().notEmpty().messages({
-    'string.empty': 'Senha atual é obrigatória'
-  }),
-  newPassword: Joi.string().min(6).messages({
-    'string.min': 'Nova senha deve ter no mínimo 6 caracteres'
-  })
-});
-
-router.use(authMiddleware);
-
-router.post('/', roleMiddleware([Role.ADMIN]), validateRequest(userSchema), register);
-router.get('/', roleMiddleware([Role.ADMIN]), getUsers);
-router.get('/:id', getUserById);
-router.put('/:id', validateRequest(userSchema), updateUser);
-router.delete('/:id', roleMiddleware([Role.ADMIN]), deleteUser);
+// Rotas
+router.post('/register', validateRequest(userSchema), register);
+router.get('/', authMiddleware, roleMiddleware([Role.ADMIN]), getUsers);
+router.get('/:id', authMiddleware, getUserById);
+router.put('/:id', authMiddleware, validateRequest(updateUserSchema), updateUser);
+router.delete('/:id', authMiddleware, roleMiddleware([Role.ADMIN]), deleteUser);
 
 export default router; 
