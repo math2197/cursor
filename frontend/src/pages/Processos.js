@@ -118,12 +118,12 @@ function Processos() {
       sortable: false,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
             <Link
               component="button"
               variant="body1"
               underline="hover"
-              sx={{ fontWeight: 600, textAlign: 'left', flex: 1, color: '#1976d2' }}
+              sx={{ fontWeight: 600, textAlign: 'left', flex: 1, color: '#1976d2', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
               onClick={() => navigate(`/processos/${params.row.id}`)}
             >
               {params.value}
@@ -134,6 +134,12 @@ function Processos() {
                 gap: 0.5,
                 ml: 1,
                 alignItems: 'center',
+                position: 'absolute',
+                right: 0,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                bgcolor: '#fff',
+                zIndex: 2,
               }}
             >
               <Tooltip title="Editar">
@@ -172,7 +178,26 @@ function Processos() {
   ];
 
   return (
-    <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh', p: 0, m: 0, boxSizing: 'border-box' }}>
+    <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh', p: 0, m: 0, boxSizing: 'border-box', position: 'relative' }}>
+      <Tooltip title="Novo Processo">
+        <IconButton
+          color="primary"
+          size="medium"
+          onClick={handleOpen}
+          sx={{
+            position: 'fixed',
+            top: 80,
+            right: 32,
+            zIndex: 1301,
+            bgcolor: '#fff',
+            border: '1px solid #e0e0e0',
+            boxShadow: 1,
+            '&:hover': { bgcolor: '#f5f5f5' }
+          }}
+        >
+          <AddIcon fontSize="medium" />
+        </IconButton>
+      </Tooltip>
       <Box sx={{ display: 'flex', alignItems: 'center', height: 64, borderBottom: '1px solid #e0e0e0', bgcolor: '#fff', pl: 0, pr: 2, m: 0 }}>
         <Typography variant="h6" sx={{ fontWeight: 600, color: '#222', ml: 0, minWidth: 260, flex: 1, textAlign: 'left' }}>Processos e casos</Typography>
         <Paper component="form" sx={{ p: '2px 8px', display: 'flex', alignItems: 'center', width: 320, mr: 2, boxShadow: 0, border: '1px solid #e0e0e0', bgcolor: '#fff' }}>
@@ -187,11 +212,6 @@ function Processos() {
             <SearchIcon />
           </IconButton>
         </Paper>
-        <Tooltip title="Novo Processo">
-          <IconButton color="primary" size="medium" onClick={handleOpen}>
-            <AddIcon fontSize="medium" />
-          </IconButton>
-        </Tooltip>
       </Box>
       <Box sx={{ width: '100%', p: 0, m: 0 }}>
         <Paper elevation={0} sx={{ borderRadius: 0, border: 'none', boxShadow: 0, mt: 0, ml: 0, width: '100%', p: 0, m: 0 }}>
@@ -209,6 +229,7 @@ function Processos() {
                 border: 0, 
                 fontSize: 15, 
                 background: '#fff',
+                width: '100%',
                 '& .MuiDataGrid-row': { 
                   minHeight: 56, 
                   maxHeight: 56,
@@ -223,7 +244,8 @@ function Processos() {
                   overflow: 'visible',
                   whiteSpace: 'normal',
                   wordBreak: 'break-word',
-                  lineHeight: 1.2
+                  lineHeight: 1.2,
+                  maxWidth: 'none',
                 },
                 '& .MuiDataGrid-columnHeaders': { 
                   bgcolor: '#fafbfc', 
