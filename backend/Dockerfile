@@ -12,8 +12,8 @@ RUN npm install
 
 COPY . .
 
-# Gerar cliente Prisma
-RUN npx prisma generate
+# Limpar build anterior e gerar cliente Prisma
+RUN rm -rf dist && npx prisma generate
 
 # Compilar TypeScript
 RUN npm run build
