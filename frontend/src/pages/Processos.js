@@ -252,23 +252,10 @@ function Processos() {
   return (
     <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh', p: 0, m: 0, boxSizing: 'border-box', position: 'relative' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: 0, pt: 3, pb: 1, bgcolor: 'transparent', width: '100%' }}>
-        <Typography variant="h5" sx={{ fontWeight: 600, color: '#222', ml: 0, flex: 1, textAlign: 'left' }}>Processos e casos</Typography>
-        <Paper component="form" sx={{ p: '2px 8px', display: 'flex', alignItems: 'center', width: 260, boxShadow: 0, border: '1px solid #e0e0e0', bgcolor: '#fff' }}>
-          <InputBase
-            sx={{ ml: 1, flex: 1, fontSize: 15 }}
-            placeholder="Digite algo para pesquisar"
-            inputProps={{ 'aria-label': 'pesquisar processos' }}
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-          <IconButton type="submit" sx={{ p: '6px' }} disabled>
-            <SearchIcon />
-          </IconButton>
-        </Paper>
         <Button
           variant="outlined"
           endIcon={<ArrowDropDownIcon />}
-          sx={{ ml: 1, bgcolor: '#f7f7fa', border: '1px solid #e0e0e0', color: '#444', fontWeight: 500, textTransform: 'none', minWidth: 100, height: 40, borderRadius: 2, px: 1.5 }}
+          sx={{ bgcolor: '#f7f7fa', border: '1px solid #e0e0e0', color: '#444', fontWeight: 500, textTransform: 'none', minWidth: 100, height: 40, borderRadius: 2, px: 1.5 }}
           onClick={e => setStatusAnchor(e.currentTarget)}
         >
           {status}
@@ -296,7 +283,7 @@ function Processos() {
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', px: 0, pb: 1, pt: 0, fontSize: 15, color: '#666' }}>
         <Typography sx={{ fontWeight: 500, fontSize: 15, color: '#666', mr: 2 }}>
-          <span style={{ fontWeight: 600 }}>{selectionModel.length > 0 ? selectionModel.length : filteredProcessos.length}</span> de 157 processos e casos
+          <span style={{ fontWeight: 600 }}>{selectionModel.length > 0 ? selectionModel.length : filteredProcessos.length}</span> de 157 processos
         </Typography>
       </Box>
       <Paper elevation={0} sx={{ borderRadius: 2, border: '1px solid #e0e0e0', boxShadow: 0, mt: 0, ml: 0, width: '100%', p: 0, m: 0 }}>
@@ -334,7 +321,7 @@ function Processos() {
                 whiteSpace: 'normal',
                 wordBreak: 'break-word',
                 lineHeight: 1.2,
-                maxWidth: 'none',
+                maxWidth: 'initial',
               },
               '& .MuiDataGrid-columnHeaders': {
                 bgcolor: '#fafbfc',
