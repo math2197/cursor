@@ -31,7 +31,7 @@ app.use('/api/reports', reportRoutes);
 // Criar usuário admin ao iniciar o servidor
 createAdminUser().catch(console.error);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.BACKEND_PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

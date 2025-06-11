@@ -23,7 +23,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/legal_system?schema=public
       - JWT_SECRET=sua_chave_secreta_muito_segura
-      - PORT=3001
+      - BACKEND_PORT=3001
     depends_on:
       - db
 
