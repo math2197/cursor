@@ -116,7 +116,7 @@ function Layout({ children }) {
           </List>
         </Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', ml: `${drawerWidth}px` }}>
+      <Box component="main" sx={{ flexGrow: 1, bgcolor: '#fff', ml: `${drawerWidth}px` }}>
         <Toolbar />
         {children}
       </Box>
