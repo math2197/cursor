@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Layout from './components/Layout';
+import Perfil from './pages/Perfil';
 import './App.css';
 
 // Placeholders para as páginas principais
@@ -12,7 +13,7 @@ const Etiquetas = () => <div><h2>Etiquetas</h2></div>;
 const Tarefas = () => <div><h2>Tarefas</h2></div>;
 const Relatorios = () => <div><h2>Relatórios</h2></div>;
 const Admin = () => <div><h2>Administração</h2></div>;
-const Perfil = () => <div><h2>Perfil do Usuário</h2></div>;
+const AlterarSenha = () => <div><h2>Alterar Senha (em breve)</h2></div>;
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
                   <Route path="relatorios" element={<Relatorios />} />
                   <Route path="admin" element={<Admin />} />
                   <Route path="perfil" element={<Perfil />} />
+                  <Route path="alterar-senha" element={<AlterarSenha />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </Layout>

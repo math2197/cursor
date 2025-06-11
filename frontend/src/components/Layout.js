@@ -1,5 +1,5 @@
-import React from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, Typography, IconButton, Avatar, Box } from '@mui/material';
+import React, { useState } from 'react';
+import { Drawer, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, Typography, IconButton, Avatar, Box, Menu, MenuItem, Divider } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GavelIcon from '@mui/icons-material/Gavel';
 import PeopleIcon from '@mui/icons-material/People';
@@ -9,6 +9,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import LockIcon from '@mui/icons-material/Lock';
 import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -25,6 +26,7 @@ const menuItems = [
 
 function Layout({ children }) {
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleMenuClick = (path) => {
     navigate(path);
@@ -32,12 +34,26 @@ function Layout({ children }) {
 
   const handleProfile = () => {
     navigate('/perfil');
+    handleMenuClose();
+  };
+
+  const handleChangePassword = () => {
+    navigate('/alterar-senha');
+    handleMenuClose();
   };
 
   const handleLogout = () => {
-    // Limpar token e redirecionar para login
     localStorage.removeItem('token');
     navigate('/login');
+    handleMenuClose();
+  };
+
+  const handleAvatarClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -47,12 +63,29 @@ function Layout({ children }) {
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
             Sistema Jurídico
           </Typography>
-          <IconButton color="inherit" onClick={handleProfile}>
-            <Avatar sx={{ width: 32, height: 32 }}><AccountCircleIcon /></Avatar>
-          </IconButton>
-          <IconButton color="inherit" onClick={handleLogout}>
-            <LogoutIcon />
-          </IconButton>
+          <Box sx={{ flexGrow: 0 }}>
+            <IconButton color="inherit" onClick={handleAvatarClick}>
+              <Avatar sx={{ width: 32, height: 32 }}><AccountCircleIcon /></Avatar>
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+              <MenuItem onClick={handleProfile}>
+                <AccountCircleIcon sx={{ mr: 1 }} /> Meu Perfil
+              </MenuItem>
+              <MenuItem onClick={handleChangePassword}>
+                <LockIcon sx={{ mr: 1 }} /> Alterar Senha
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={handleLogout}>
+                <LogoutIcon sx={{ mr: 1 }} /> Sair
+              </MenuItem>
+            </Menu>
+          </Box>
         </Toolbar>
       </AppBar>
       <Drawer
