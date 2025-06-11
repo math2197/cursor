@@ -22,11 +22,8 @@ RUN npx prisma generate
 # Compilar TypeScript
 RUN npm run build
 
-# Verificar se o build foi bem sucedido
-RUN ls -la dist/
-
 # Remover arquivos desnecessários
-RUN rm -rf src node_modules
+RUN rm -rf src
 
 # Reinstalar apenas as dependências de produção
 RUN npm install --production

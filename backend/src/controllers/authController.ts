@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
@@ -14,13 +14,15 @@ export const login = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(401).json({ message: 'Usuário não encontrado' });
+      res.status(401).json({ message: 'Usuário não encontrado' });
+      return;
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      return res.status(401).json({ message: 'Senha inválida' });
+      res.status(401).json({ message: 'Senha inválida' });
+      return;
     }
 
     const token = jwt.sign(
@@ -43,7 +45,7 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const createAdminUser = async () => {
+export const createAdminUser = async (): Promise<void> => {
   try {
     const adminExists = await prisma.user.findFirst({
       where: { role: 'ADMIN' },
