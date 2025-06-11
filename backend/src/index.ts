@@ -9,6 +9,7 @@ import processRoutes from './routes/process.routes';
 import taskRoutes from './routes/task.routes';
 import tagRoutes from './routes/tag.routes';
 import reportRoutes from './routes/report.routes';
+import { createAdminUser } from './controllers/authController';
 
 dotenv.config();
 
@@ -26,6 +27,9 @@ app.use('/api/processes', processRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/reports', reportRoutes);
+
+// Criar usuário admin ao iniciar o servidor
+createAdminUser().catch(console.error);
 
 const PORT = process.env.PORT || 3001;
 
