@@ -117,7 +117,7 @@ function Processos() {
       flex: 2,
       sortable: false,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative', width: '100%' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
             <Link
               component="button"
@@ -134,12 +134,6 @@ function Processos() {
                 gap: 0.5,
                 ml: 1,
                 alignItems: 'center',
-                position: 'absolute',
-                right: 0,
-                top: 0,
-                height: '100%',
-                background: 'white',
-                zIndex: 2,
               }}
             >
               <Tooltip title="Editar">
@@ -151,9 +145,22 @@ function Processos() {
             </Box>
           </Box>
           <Typography variant="caption" color="text.secondary" sx={{ mt: 0.2 }}>{params.row.numero}</Typography>
-          <Box sx={{ mt: 0.5, display: 'flex', gap: 0.5 }}>
+          <Box sx={{ mt: 0.5, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
             {params.row.etiquetas && params.row.etiquetas.map((et, i) => (
-              <Chip key={i} label={et.label} color={et.color} size="small" />
+              <Chip 
+                key={i} 
+                label={et.label} 
+                color={et.color} 
+                size="small" 
+                sx={{ 
+                  height: 20, 
+                  '& .MuiChip-label': { 
+                    px: 1, 
+                    fontSize: '0.75rem',
+                    fontWeight: 500
+                  } 
+                }} 
+              />
             ))}
           </Box>
         </Box>
@@ -165,8 +172,8 @@ function Processos() {
   ];
 
   return (
-    <Box sx={{ pl: 0, pr: 0, pt: 2, width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, ml: 3, mr: 3 }}>
+    <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', p: 2, borderBottom: '1px solid #e0e0e0', bgcolor: '#fff' }}>
         <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600, color: '#222' }}>Processos e casos</Typography>
         <Paper component="form" sx={{ p: '2px 8px', display: 'flex', alignItems: 'center', width: 320, mr: 2, boxShadow: 0, border: '1px solid #e0e0e0', bgcolor: '#fff' }}>
           <InputBase
@@ -186,8 +193,8 @@ function Processos() {
           </IconButton>
         </Tooltip>
       </Box>
-      <Box sx={{ ml: 3, mr: 3 }}>
-        <Paper elevation={0} sx={{ p: 0, borderRadius: 2, border: '1px solid #e0e0e0', boxShadow: 0 }}>
+      <Box sx={{ p: 2 }}>
+        <Paper elevation={0} sx={{ borderRadius: 1, border: '1px solid #e0e0e0', boxShadow: 0 }}>
           <div style={{ height: 520, width: '100%' }}>
             <DataGrid
               rows={filteredProcessos}
@@ -198,7 +205,30 @@ function Processos() {
               onRowMouseEnter={(params) => setHoveredRow(params.id)}
               onRowMouseLeave={() => setHoveredRow(null)}
               onRowClick={(params) => navigate(`/processos/${params.id}`)}
-              sx={{ border: 0, fontSize: 15, background: '#fff', '& .MuiDataGrid-row': { minHeight: 48, maxHeight: 48 }, '& .MuiDataGrid-cell': { py: 0.5, px: 1 }, '& .MuiDataGrid-columnHeaders': { bgcolor: '#fafbfc', color: '#222', fontWeight: 600, fontSize: 14 } }}
+              sx={{ 
+                border: 0, 
+                fontSize: 15, 
+                background: '#fff',
+                '& .MuiDataGrid-row': { 
+                  minHeight: 48, 
+                  maxHeight: 48,
+                  '&:hover': {
+                    bgcolor: '#f5f5f5'
+                  }
+                },
+                '& .MuiDataGrid-cell': { 
+                  py: 0.5, 
+                  px: 1,
+                  borderBottom: '1px solid #f0f0f0'
+                },
+                '& .MuiDataGrid-columnHeaders': { 
+                  bgcolor: '#fafbfc', 
+                  color: '#222', 
+                  fontWeight: 600, 
+                  fontSize: 14,
+                  borderBottom: '1px solid #e0e0e0'
+                }
+              }}
             />
           </div>
         </Paper>
