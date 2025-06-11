@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Layout from './components/Layout';
 import Perfil from './pages/Perfil';
 import Processos from './pages/Processos';
+import ProcessoDetalhes from './pages/ProcessoDetalhes';
 import './App.css';
 
 // Placeholders para as páginas principais
@@ -28,6 +29,7 @@ function App() {
                 <Routes>
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="processos" element={<Processos />} />
+                  <Route path="processos/:id" element={<ProcessoDetalhes />} />
                   <Route path="clientes" element={<Clientes />} />
                   <Route path="etiquetas" element={<Etiquetas />} />
                   <Route path="tarefas" element={<Tarefas />} />

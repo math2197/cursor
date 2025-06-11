@@ -11,6 +11,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LockIcon from '@mui/icons-material/Lock';
 import { useNavigate } from 'react-router-dom';
+import GlobalSearch from './GlobalSearch';
 
 const drawerWidth = 240;
 
@@ -63,6 +64,9 @@ function Layout({ children }) {
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
             Sistema Jurídico
           </Typography>
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+            <GlobalSearch />
+          </Box>
           <Box sx={{ flexGrow: 0 }}>
             <IconButton color="inherit" onClick={handleAvatarClick}>
               <Avatar sx={{ width: 32, height: 32 }}><AccountCircleIcon /></Avatar>
