@@ -9,6 +9,8 @@ RUN apk add --no-cache openssl python3 make g++
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY prisma ./prisma/
+COPY wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
 
 # Instalar todas as dependências
 RUN npm install
@@ -30,4 +32,4 @@ RUN npm install --production
 
 EXPOSE 3001
 
-CMD ["npm", "start"] 
+CMD ["/wait-for-it.sh", "db:5432", "--", "sh", "-c", "npx prisma migrate deploy && npm start"] 
