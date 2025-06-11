@@ -3,10 +3,11 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Instalar dependências do sistema
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl python3 make g++
 
 COPY package*.json ./
 
+# Instalar todas as dependências
 RUN npm install
 
 COPY . .
