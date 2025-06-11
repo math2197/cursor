@@ -4,10 +4,10 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Layout from './components/Layout';
 import Perfil from './pages/Perfil';
+import Processos from './pages/Processos';
 import './App.css';
 
 // Placeholders para as páginas principais
-const Processos = () => <div><h2>Processos</h2></div>;
 const Clientes = () => <div><h2>Clientes</h2></div>;
 const Etiquetas = () => <div><h2>Etiquetas</h2></div>;
 const Tarefas = () => <div><h2>Tarefas</h2></div>;
