@@ -252,18 +252,20 @@ function Processos() {
   return (
     <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh', p: 0, m: 0, boxSizing: 'border-box', position: 'relative' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: 0, pt: 3, pb: 1, bgcolor: 'transparent', width: '100%' }}>
-        <Button
-          variant="outlined"
-          endIcon={<ArrowDropDownIcon />}
-          sx={{ bgcolor: '#f7f7fa', border: '1px solid #e0e0e0', color: '#444', fontWeight: 500, textTransform: 'none', minWidth: 100, height: 40, borderRadius: 2, px: 1.5 }}
-          onClick={e => setStatusAnchor(e.currentTarget)}
-        >
-          {status}
-        </Button>
+        <Tooltip title="Status dos processos">
+          <IconButton
+            sx={{ bgcolor: '#f7f7fa', border: '1px solid #e0e0e0', color: '#444', width: 40, height: 40, borderRadius: '50%', mr: 1, '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}
+            onClick={e => setStatusAnchor(e.currentTarget)}
+          >
+            <Typography sx={{ fontWeight: 600, fontSize: 15 }}>{status}</Typography>
+            <ArrowDropDownIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
         <Menu anchorEl={statusAnchor} open={Boolean(statusAnchor)} onClose={() => setStatusAnchor(null)}>
           <MenuItem onClick={() => { setStatus('Ativos'); setStatusAnchor(null); }}>Ativos</MenuItem>
           <MenuItem onClick={() => { setStatus('Arquivados'); setStatusAnchor(null); }}>Arquivados</MenuItem>
         </Menu>
+        <Box sx={{ flex: 1 }} />
         <Tooltip title="Imprimir">
           <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', ml: 0.5, '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}><PrintIcon /></IconButton>
         </Tooltip>
@@ -306,8 +308,8 @@ function Processos() {
               background: '#fff',
               width: '100%',
               '& .MuiDataGrid-row': {
-                minHeight: 64,
-                maxHeight: 64,
+                minHeight: 80,
+                maxHeight: 80,
                 borderBottom: '1px solid #f0f0f0',
                 '&:hover': {
                   bgcolor: '#f5f5f5',
