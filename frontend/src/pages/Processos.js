@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Chip, Link, Stack, Tooltip } from '@mui/material';
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Chip, Link, Stack, Tooltip, Paper, InputBase } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LabelIcon from '@mui/icons-material/Label';
+import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
 
 const mockEtiquetas = [
@@ -28,6 +29,7 @@ function Processos() {
   const [selectedProcesso, setSelectedProcesso] = useState(null);
   const [etiquetas, setEtiquetas] = useState(mockEtiquetas);
   const [novaEtiqueta, setNovaEtiqueta] = useState({ label: '', color: 'primary' });
+  const [search, setSearch] = useState('');
   const navigate = useNavigate();
 
   const handleOpen = () => {
@@ -101,11 +103,19 @@ function Processos() {
     ));
   };
 
+  const filteredProcessos = processos.filter(p =>
+    p.titulo.toLowerCase().includes(search.toLowerCase()) ||
+    p.numero.toLowerCase().includes(search.toLowerCase()) ||
+    p.cliente.toLowerCase().includes(search.toLowerCase()) ||
+    p.acaoForo.toLowerCase().includes(search.toLowerCase())
+  );
+
   const columns = [
     {
       field: 'titulo',
       headerName: 'Título',
       flex: 2,
+      sortable: false,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative', width: '100%' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
@@ -113,7 +123,7 @@ function Processos() {
               component="button"
               variant="body1"
               underline="hover"
-              sx={{ fontWeight: 600, textAlign: 'left', flex: 1 }}
+              sx={{ fontWeight: 600, textAlign: 'left', flex: 1, color: '#1976d2' }}
               onClick={() => navigate(`/processos/${params.row.id}`)}
             >
               {params.value}
@@ -149,14 +159,27 @@ function Processos() {
         </Box>
       ),
     },
-    { field: 'cliente', headerName: 'Cliente', flex: 1 },
-    { field: 'acaoForo', headerName: 'Ação / Foro', flex: 1 },
-    { field: 'ultMov', headerName: 'Últ. Mov', flex: 0.7 },
+    { field: 'cliente', headerName: 'Cliente', flex: 1, sortable: false },
+    { field: 'acaoForo', headerName: 'Ação / Foro', flex: 1, sortable: false },
+    { field: 'ultMov', headerName: 'Últ. Mov', flex: 0.7, sortable: false },
   ];
 
   return (
-    <Box sx={{ pl: 0, pr: 0, pt: 2, width: '100%' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 1, mr: 3 }}>
+    <Box sx={{ pl: 0, pr: 0, pt: 2, width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, ml: 3, mr: 3 }}>
+        <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600, color: '#222' }}>Processos e casos</Typography>
+        <Paper component="form" sx={{ p: '2px 8px', display: 'flex', alignItems: 'center', width: 320, mr: 2, boxShadow: 0, border: '1px solid #e0e0e0', bgcolor: '#fff' }}>
+          <InputBase
+            sx={{ ml: 1, flex: 1, fontSize: 15 }}
+            placeholder="Digite algo para pesquisar"
+            inputProps={{ 'aria-label': 'pesquisar processos' }}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          <IconButton type="submit" sx={{ p: '6px' }} disabled>
+            <SearchIcon />
+          </IconButton>
+        </Paper>
         <Tooltip title="Novo Processo">
           <IconButton color="primary" size="medium" onClick={handleOpen}>
             <AddIcon fontSize="medium" />
@@ -164,20 +187,21 @@ function Processos() {
         </Tooltip>
       </Box>
       <Box sx={{ ml: 3, mr: 3 }}>
-        <Typography variant="h5" sx={{ mb: 1 }}>Processos</Typography>
-        <div style={{ height: 500, width: '100%' }}>
-          <DataGrid
-            rows={processos}
-            columns={columns}
-            pageSize={8}
-            rowsPerPageOptions={[8]}
-            disableSelectionOnClick
-            onRowMouseEnter={(params) => setHoveredRow(params.id)}
-            onRowMouseLeave={() => setHoveredRow(null)}
-            onRowClick={(params) => navigate(`/processos/${params.id}`)}
-            sx={{ border: 0 }}
-          />
-        </div>
+        <Paper elevation={0} sx={{ p: 0, borderRadius: 2, border: '1px solid #e0e0e0', boxShadow: 0 }}>
+          <div style={{ height: 520, width: '100%' }}>
+            <DataGrid
+              rows={filteredProcessos}
+              columns={columns}
+              pageSize={8}
+              rowsPerPageOptions={[8]}
+              disableSelectionOnClick
+              onRowMouseEnter={(params) => setHoveredRow(params.id)}
+              onRowMouseLeave={() => setHoveredRow(null)}
+              onRowClick={(params) => navigate(`/processos/${params.id}`)}
+              sx={{ border: 0, fontSize: 15, background: '#fff', '& .MuiDataGrid-row': { minHeight: 48, maxHeight: 48 }, '& .MuiDataGrid-cell': { py: 0.5, px: 1 }, '& .MuiDataGrid-columnHeaders': { bgcolor: '#fafbfc', color: '#222', fontWeight: 600, fontSize: 14 } }}
+            />
+          </div>
+        </Paper>
       </Box>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editId ? 'Editar Processo' : 'Novo Processo'}</DialogTitle>
