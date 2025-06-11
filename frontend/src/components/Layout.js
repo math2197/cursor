@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import GlobalSearch from './GlobalSearch';
 
 const drawerWidth = 240;
+const appBarHeight = 64;
 
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
@@ -59,9 +60,54 @@ function Layout({ children }) {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar>
-          <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          height: '100vh',
+          [`& .MuiDrawer-paper`]: {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+            borderRight: '1px solid #e0e0e0',
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            height: '100vh',
+            bgcolor: '#fff',
+          },
+        }}
+        PaperProps={{ elevation: 0 }}
+      >
+        <Toolbar sx={{ minHeight: appBarHeight }} />
+        <Box sx={{ overflow: 'auto' }}>
+          <List>
+            {menuItems.map((item) => (
+              <ListItem button key={item.text} onClick={() => handleMenuClick(item.path)}>
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
+      <AppBar
+        position="fixed"
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          left: `${drawerWidth}px`,
+          width: `calc(100% - ${drawerWidth}px)`,
+          height: appBarHeight,
+          boxShadow: 'none',
+          borderBottom: '1px solid #e0e0e0',
+          bgcolor: '#1976d2',
+        }}
+      >
+        <Toolbar sx={{ minHeight: appBarHeight, px: 2 }}>
+          <Typography variant="h6" noWrap sx={{ flexGrow: 1, color: '#fff', fontWeight: 600 }}>
             Sistema Jurídico
           </Typography>
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
@@ -92,32 +138,19 @@ function Layout({ children }) {
           </Box>
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="permanent"
+      <Box
+        component="main"
         sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { 
-            width: drawerWidth, 
-            boxSizing: 'border-box',
-            borderRight: '1px solid #e0e0e0'
-          },
+          flexGrow: 1,
+          ml: `${drawerWidth}px`,
+          mt: `${appBarHeight}px`,
+          width: `calc(100% - ${drawerWidth}px)`,
+          minHeight: `calc(100vh - ${appBarHeight}px)`,
+          bgcolor: '#f7f7fa',
+          p: 0,
+          boxSizing: 'border-box',
         }}
       >
-        <Toolbar />
-        <Box sx={{ overflow: 'auto' }}>
-          <List>
-            {menuItems.map((item) => (
-              <ListItem button key={item.text} onClick={() => handleMenuClick(item.path)}>
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, bgcolor: '#fff', ml: `${drawerWidth}px` }}>
-        <Toolbar />
         {children}
       </Box>
     </Box>
