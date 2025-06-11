@@ -17,6 +17,9 @@ RUN npx prisma generate
 # Compilar TypeScript
 RUN npm run build
 
+# Remover node_modules e reinstalar apenas as dependências de produção
+RUN rm -rf node_modules && npm install --production
+
 EXPOSE 3001
 
 CMD ["npm", "start"] 
