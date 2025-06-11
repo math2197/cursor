@@ -193,8 +193,8 @@ function Processos() {
           </IconButton>
         </Tooltip>
       </Box>
-      <Box sx={{ p: 2 }}>
-        <Paper elevation={0} sx={{ borderRadius: 1, border: '1px solid #e0e0e0', boxShadow: 0 }}>
+      <Box>
+        <Paper elevation={0} sx={{ borderRadius: 0, border: '1px solid #e0e0e0', boxShadow: 0 }}>
           <div style={{ height: 520, width: '100%' }}>
             <DataGrid
               rows={filteredProcessos}

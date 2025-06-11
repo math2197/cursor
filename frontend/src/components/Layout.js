@@ -97,7 +97,11 @@ function Layout({ children }) {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+          [`& .MuiDrawer-paper`]: { 
+            width: drawerWidth, 
+            boxSizing: 'border-box',
+            borderRight: '1px solid #e0e0e0'
+          },
         }}
       >
         <Toolbar />
@@ -112,7 +116,7 @@ function Layout({ children }) {
           </List>
         </Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3, ml: `${drawerWidth}px` }}>
+      <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', ml: `${drawerWidth}px` }}>
         <Toolbar />
         {children}
       </Box>
