@@ -172,9 +172,9 @@ function Processos() {
   ];
 
   return (
-    <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', p: 2, borderBottom: '1px solid #e0e0e0', bgcolor: '#fff' }}>
-        <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600, color: '#222' }}>Processos e casos</Typography>
+    <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh', p: 0, m: 0 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', height: 64, borderBottom: '1px solid #e0e0e0', bgcolor: '#fff', pl: 0, pr: 2 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, color: '#222', ml: 0, minWidth: 260, flex: 1, textAlign: 'left' }}>Processos e casos</Typography>
         <Paper component="form" sx={{ p: '2px 8px', display: 'flex', alignItems: 'center', width: 320, mr: 2, boxShadow: 0, border: '1px solid #e0e0e0', bgcolor: '#fff' }}>
           <InputBase
             sx={{ ml: 1, flex: 1, fontSize: 15 }}
@@ -193,14 +193,14 @@ function Processos() {
           </IconButton>
         </Tooltip>
       </Box>
-      <Box>
-        <Paper elevation={0} sx={{ borderRadius: 0, border: '1px solid #e0e0e0', boxShadow: 0 }}>
-          <div style={{ height: 520, width: '100%' }}>
+      <Box sx={{ width: '100%', p: 0, m: 0 }}>
+        <Paper elevation={0} sx={{ borderRadius: 0, border: 'none', boxShadow: 0, mt: 0, ml: 0, width: '100%' }}>
+          <div style={{ height: 'calc(100vh - 64px - 56px)', width: '100%' }}>
             <DataGrid
               rows={filteredProcessos}
               columns={columns}
               pageSize={8}
-              rowsPerPageOptions={[8]}
+              rowsPerPageOptions={[8, 25, 100]}
               disableSelectionOnClick
               onRowMouseEnter={(params) => setHoveredRow(params.id)}
               onRowMouseLeave={() => setHoveredRow(null)}
@@ -210,23 +210,29 @@ function Processos() {
                 fontSize: 15, 
                 background: '#fff',
                 '& .MuiDataGrid-row': { 
-                  minHeight: 48, 
-                  maxHeight: 48,
+                  minHeight: 40, 
+                  maxHeight: 40,
                   '&:hover': {
                     bgcolor: '#f5f5f5'
                   }
                 },
                 '& .MuiDataGrid-cell': { 
-                  py: 0.5, 
+                  py: 0.2, 
                   px: 1,
-                  borderBottom: '1px solid #f0f0f0'
+                  borderBottom: '1px solid #f0f0f0',
+                  overflow: 'visible',
+                  whiteSpace: 'normal',
+                  wordBreak: 'break-word',
+                  lineHeight: 1.2
                 },
                 '& .MuiDataGrid-columnHeaders': { 
                   bgcolor: '#fafbfc', 
                   color: '#222', 
                   fontWeight: 600, 
                   fontSize: 14,
-                  borderBottom: '1px solid #e0e0e0'
+                  borderBottom: '1px solid #e0e0e0',
+                  minHeight: 40,
+                  maxHeight: 40
                 }
               }}
             />
