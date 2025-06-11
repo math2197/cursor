@@ -172,8 +172,8 @@ function Processos() {
   ];
 
   return (
-    <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh', p: 0, m: 0 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', height: 64, borderBottom: '1px solid #e0e0e0', bgcolor: '#fff', pl: 0, pr: 2 }}>
+    <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh', p: 0, m: 0, boxSizing: 'border-box' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', height: 64, borderBottom: '1px solid #e0e0e0', bgcolor: '#fff', pl: 0, pr: 2, m: 0 }}>
         <Typography variant="h6" sx={{ fontWeight: 600, color: '#222', ml: 0, minWidth: 260, flex: 1, textAlign: 'left' }}>Processos e casos</Typography>
         <Paper component="form" sx={{ p: '2px 8px', display: 'flex', alignItems: 'center', width: 320, mr: 2, boxShadow: 0, border: '1px solid #e0e0e0', bgcolor: '#fff' }}>
           <InputBase
@@ -194,7 +194,7 @@ function Processos() {
         </Tooltip>
       </Box>
       <Box sx={{ width: '100%', p: 0, m: 0 }}>
-        <Paper elevation={0} sx={{ borderRadius: 0, border: 'none', boxShadow: 0, mt: 0, ml: 0, width: '100%' }}>
+        <Paper elevation={0} sx={{ borderRadius: 0, border: 'none', boxShadow: 0, mt: 0, ml: 0, width: '100%', p: 0, m: 0 }}>
           <div style={{ height: 'calc(100vh - 64px - 56px)', width: '100%' }}>
             <DataGrid
               rows={filteredProcessos}
