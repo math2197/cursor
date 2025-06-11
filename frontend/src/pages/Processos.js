@@ -251,44 +251,44 @@ function Processos() {
 
   return (
     <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh', p: 0, m: 0, boxSizing: 'border-box', position: 'relative' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: 0, pt: 3, pb: 1, bgcolor: 'transparent', width: '100%' }}>
-        <Tooltip title="Status dos processos">
-          <IconButton
-            sx={{ bgcolor: '#f7f7fa', border: '1px solid #e0e0e0', color: '#444', width: 40, height: 40, borderRadius: '50%', mr: 1, '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}
-            onClick={e => setStatusAnchor(e.currentTarget)}
-          >
-            <Typography sx={{ fontWeight: 600, fontSize: 15 }}>{status}</Typography>
-            <ArrowDropDownIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5, px: 0, pt: 3, pb: 0, bgcolor: 'transparent', width: '100%' }}>
+        <Button
+          variant="outlined"
+          endIcon={<ArrowDropDownIcon />}
+          sx={{ bgcolor: '#f7f7fa', border: '1px solid #e0e0e0', color: '#444', fontWeight: 500, textTransform: 'none', height: 36, borderRadius: 2, px: 2, minWidth: 0, mb: 0.5 }}
+          onClick={e => setStatusAnchor(e.currentTarget)}
+        >
+          {status}
+        </Button>
         <Menu anchorEl={statusAnchor} open={Boolean(statusAnchor)} onClose={() => setStatusAnchor(null)}>
           <MenuItem onClick={() => { setStatus('Ativos'); setStatusAnchor(null); }}>Ativos</MenuItem>
           <MenuItem onClick={() => { setStatus('Arquivados'); setStatusAnchor(null); }}>Arquivados</MenuItem>
         </Menu>
-        <Box sx={{ flex: 1 }} />
+        <Box sx={{ display: 'flex', alignItems: 'center', fontSize: 15, color: '#666', mt: 0.5 }}>
+          <Typography sx={{ fontWeight: 500, fontSize: 15, color: '#666', mr: 2 }}>
+            <span style={{ fontWeight: 600 }}>{selectionModel.length > 0 ? selectionModel.length : filteredProcessos.length}</span> de 157 processos
+          </Typography>
+        </Box>
+      </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, position: 'absolute', top: 32, right: 0 }}>
         <Tooltip title="Imprimir">
-          <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', ml: 0.5, '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}><PrintIcon /></IconButton>
+          <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}><PrintIcon /></IconButton>
         </Tooltip>
         <Tooltip title="Exportar">
-          <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', ml: 0.5, '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}><FileDownloadIcon /></IconButton>
+          <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}><FileDownloadIcon /></IconButton>
         </Tooltip>
         <Tooltip title="Novo Processo">
           <IconButton
             color="primary"
             size="large"
             onClick={handleOpen}
-            sx={{ ml: 0.5, bgcolor: '#2196f3', color: '#fff', borderRadius: '50%', width: 44, height: 44, boxShadow: 1, border: '1.5px solid #1976d2', '&:hover': { bgcolor: '#1976d2', boxShadow: 2 } }}
+            sx={{ bgcolor: '#2196f3', color: '#fff', borderRadius: '50%', width: 44, height: 44, boxShadow: 1, border: '1.5px solid #1976d2', '&:hover': { bgcolor: '#1976d2', boxShadow: 2 } }}
           >
             <AddIcon fontSize="medium" />
           </IconButton>
         </Tooltip>
       </Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', px: 0, pb: 1, pt: 0, fontSize: 15, color: '#666' }}>
-        <Typography sx={{ fontWeight: 500, fontSize: 15, color: '#666', mr: 2 }}>
-          <span style={{ fontWeight: 600 }}>{selectionModel.length > 0 ? selectionModel.length : filteredProcessos.length}</span> de 157 processos
-        </Typography>
-      </Box>
-      <Paper elevation={0} sx={{ borderRadius: 2, border: '1px solid #e0e0e0', boxShadow: 0, mt: 0, ml: 0, width: '100%', p: 0, m: 0 }}>
+      <Paper elevation={0} sx={{ borderRadius: 2, border: '1px solid #e0e0e0', boxShadow: 0, mt: 2, ml: 0, width: '100%', p: 0, m: 0 }}>
         <div style={{ height: 520, width: '100%' }}>
           <DataGrid
             rows={filteredProcessos}
@@ -308,8 +308,7 @@ function Processos() {
               background: '#fff',
               width: '100%',
               '& .MuiDataGrid-row': {
-                minHeight: 80,
-                maxHeight: 80,
+                minHeight: 64,
                 borderBottom: '1px solid #f0f0f0',
                 '&:hover': {
                   bgcolor: '#f5f5f5',
@@ -324,6 +323,9 @@ function Processos() {
                 wordBreak: 'break-word',
                 lineHeight: 1.2,
                 maxWidth: 'initial',
+                height: 'auto',
+                alignItems: 'flex-start',
+                display: 'flex',
               },
               '& .MuiDataGrid-columnHeaders': {
                 bgcolor: '#fafbfc',
@@ -341,6 +343,7 @@ function Processos() {
                 border: 'none',
               },
             }}
+            getRowHeight={() => 'auto'}
           />
         </div>
       </Paper>
