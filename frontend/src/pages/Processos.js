@@ -141,6 +141,12 @@ function Processos() {
             opacity: hoveredRow === params.row.id ? 1 : 0,
             transition: 'opacity 0.2s',
             pointerEvents: hoveredRow === params.row.id ? 'auto' : 'none',
+            position: 'absolute',
+            right: 8,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'white',
+            zIndex: 2,
           }}
         >
           <Tooltip title="Editar">
@@ -158,8 +164,8 @@ function Processos() {
   ];
 
   return (
-    <Box sx={{ pl: 0, pr: 2, pt: 2, width: '100%' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+    <Box sx={{ pl: 0, pr: 0, pt: 2, width: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, ml: 3, mr: 3 }}>
         <Typography variant="h5" sx={{ flexGrow: 1 }}>Processos</Typography>
         <Tooltip title="Novo Processo">
           <IconButton color="primary" size="medium" onClick={handleOpen} sx={{ ml: 1 }}>
@@ -167,18 +173,21 @@ function Processos() {
           </IconButton>
         </Tooltip>
       </Box>
-      <div style={{ height: 500, width: '100%' }}>
-        <DataGrid
-          rows={processos}
-          columns={columns}
-          pageSize={8}
-          rowsPerPageOptions={[8]}
-          disableSelectionOnClick
-          onRowMouseEnter={(params) => setHoveredRow(params.id)}
-          onRowMouseLeave={() => setHoveredRow(null)}
-          onRowClick={handleRowClick}
-        />
-      </div>
+      <Box sx={{ ml: 3, mr: 3 }}>
+        <div style={{ height: 500, width: '100%' }}>
+          <DataGrid
+            rows={processos}
+            columns={columns}
+            pageSize={8}
+            rowsPerPageOptions={[8]}
+            disableSelectionOnClick
+            onRowMouseEnter={(params) => setHoveredRow(params.id)}
+            onRowMouseLeave={() => setHoveredRow(null)}
+            onRowClick={handleRowClick}
+            sx={{ border: 0 }}
+          />
+        </div>
+      </Box>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editId ? 'Editar Processo' : 'Novo Processo'}</DialogTitle>
         <DialogContent>
