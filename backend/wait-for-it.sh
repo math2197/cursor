@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 #   Use this script to test if a given TCP host/port are available
 #
 #   Usage:
@@ -22,7 +22,7 @@ STRICT=0
 HOST=""
 PORT=""
 
-while [[ $# -gt 0 ]]; do
+while [ $# -gt 0 ]; do
     case "$1" in
         *:* )
         HOST=$(echo $1 | cut -d: -f1)
@@ -72,30 +72,30 @@ while [[ $# -gt 0 ]]; do
     esac
     done
 
-if [[ "$HOST" == "" || "$PORT" == "" ]]; then
+if [ "$HOST" = "" ] || [ "$PORT" = "" ]; then
     echo "Error: you need to provide a host and port to test."
     exit 1
 fi
 
 for i in $(seq $TIMEOUT); do
     nc -z "$HOST" "$PORT" >/dev/null 2>&1 && break
-    if [[ $QUIET -ne 1 ]]; then
+    if [ $QUIET -ne 1 ]; then
         echo "Waiting for $HOST:$PORT... ($i/$TIMEOUT)"
     fi
     sleep 1
     done
 
-if [[ $i -eq $TIMEOUT ]]; then
+if [ $i -eq $TIMEOUT ]; then
     echo "Timeout occurred after waiting $TIMEOUT seconds for $HOST:$PORT"
     exit 1
 fi
 
-if [[ $QUIET -ne 1 ]]; then
+if [ $QUIET -ne 1 ]; then
     echo "$HOST:$PORT is available!"
 fi
 
-if [[ $STRICT -eq 1 ]]; then
-    if [[ $i -eq $TIMEOUT ]]; then
+if [ $STRICT -eq 1 ]; then
+    if [ $i -eq $TIMEOUT ]; then
         exit 1
     fi
 fi
