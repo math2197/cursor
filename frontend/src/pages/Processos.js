@@ -14,14 +14,14 @@ const mockEtiquetas = [
 ];
 
 const mockProcessos = [
-  { id: 1, numero: '0001234-56.2024.8.26.0000', titulo: 'Ação de Cobrança', cliente: 'João Silva', status: 'PENDENTE', etiquetas: [mockEtiquetas[0], mockEtiquetas[1]] },
-  { id: 2, numero: '0005678-90.2024.8.26.0000', titulo: 'Inventário', cliente: 'Maria Souza', status: 'EM ANDAMENTO', etiquetas: [mockEtiquetas[2]] },
+  { id: 1, titulo: 'Ação de Cobrança', numero: '0001234-56.2024.8.26.0000', cliente: 'João Silva', acaoForo: 'Pedido de Providências', ultMov: '11/06/2025', etiquetas: [mockEtiquetas[0], mockEtiquetas[1]] },
+  { id: 2, titulo: 'Inventário', numero: '0005678-90.2024.8.26.0000', cliente: 'Maria Souza', acaoForo: 'Inventário', ultMov: '10/06/2025', etiquetas: [mockEtiquetas[2]] },
 ];
 
 function Processos() {
   const [processos, setProcessos] = useState(mockProcessos);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ numero: '', titulo: '', cliente: '', status: '', etiquetas: [] });
+  const [form, setForm] = useState({ titulo: '', numero: '', cliente: '', acaoForo: '', ultMov: '', etiquetas: [] });
   const [editId, setEditId] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
   const [openEtiquetas, setOpenEtiquetas] = useState(false);
@@ -31,7 +31,7 @@ function Processos() {
   const navigate = useNavigate();
 
   const handleOpen = () => {
-    setForm({ numero: '', titulo: '', cliente: '', status: '', etiquetas: [] });
+    setForm({ titulo: '', numero: '', cliente: '', acaoForo: '', ultMov: '', etiquetas: [] });
     setEditId(null);
     setOpen(true);
   };
@@ -107,16 +107,40 @@ function Processos() {
       headerName: 'Título',
       flex: 2,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Link
-            component="button"
-            variant="body1"
-            underline="hover"
-            sx={{ fontWeight: 600, textAlign: 'left' }}
-            onClick={() => navigate(`/processos/${params.row.id}`)}
-          >
-            {params.value}
-          </Link>
+        <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative', width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+            <Link
+              component="button"
+              variant="body1"
+              underline="hover"
+              sx={{ fontWeight: 600, textAlign: 'left', flex: 1 }}
+              onClick={() => navigate(`/processos/${params.row.id}`)}
+            >
+              {params.value}
+            </Link>
+            <Box
+              sx={{
+                display: hoveredRow === params.row.id ? 'flex' : 'none',
+                gap: 0.5,
+                ml: 1,
+                alignItems: 'center',
+                position: 'absolute',
+                right: 0,
+                top: 0,
+                height: '100%',
+                background: 'white',
+                zIndex: 2,
+              }}
+            >
+              <Tooltip title="Editar">
+                <IconButton size="small" color="primary" onClick={e => { e.stopPropagation(); handleEdit(params.row.id); }}><EditIcon fontSize="small" /></IconButton>
+              </Tooltip>
+              <Tooltip title="Etiquetas">
+                <IconButton size="small" color="secondary" onClick={e => { e.stopPropagation(); handleOpenEtiquetas(params.row); }}><LabelIcon fontSize="small" /></IconButton>
+              </Tooltip>
+            </Box>
+          </Box>
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 0.2 }}>{params.row.numero}</Typography>
           <Box sx={{ mt: 0.5, display: 'flex', gap: 0.5 }}>
             {params.row.etiquetas && params.row.etiquetas.map((et, i) => (
               <Chip key={i} label={et.label} color={et.color} size="small" />
@@ -125,55 +149,22 @@ function Processos() {
         </Box>
       ),
     },
-    { field: 'numero', headerName: 'Número', flex: 1 },
     { field: 'cliente', headerName: 'Cliente', flex: 1 },
-    { field: 'status', headerName: 'Status', flex: 1 },
-    {
-      field: 'acoes',
-      headerName: 'Ações',
-      width: 80,
-      sortable: false,
-      renderCell: (params) => (
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 0.5,
-            opacity: hoveredRow === params.row.id ? 1 : 0,
-            transition: 'opacity 0.2s',
-            pointerEvents: hoveredRow === params.row.id ? 'auto' : 'none',
-            position: 'absolute',
-            right: 8,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            background: 'white',
-            zIndex: 2,
-          }}
-        >
-          <Tooltip title="Editar">
-            <IconButton size="small" color="primary" onClick={e => { e.stopPropagation(); handleEdit(params.row.id); }}><EditIcon fontSize="small" /></IconButton>
-          </Tooltip>
-          <Tooltip title="Etiquetas">
-            <IconButton size="small" color="secondary" onClick={e => { e.stopPropagation(); handleOpenEtiquetas(params.row); }}><LabelIcon fontSize="small" /></IconButton>
-          </Tooltip>
-          <Tooltip title="Excluir">
-            <IconButton size="small" color="error" onClick={e => { e.stopPropagation(); handleDelete(params.row.id); }}><DeleteIcon fontSize="small" /></IconButton>
-          </Tooltip>
-        </Box>
-      ),
-    },
+    { field: 'acaoForo', headerName: 'Ação / Foro', flex: 1 },
+    { field: 'ultMov', headerName: 'Últ. Mov', flex: 0.7 },
   ];
 
   return (
     <Box sx={{ pl: 0, pr: 0, pt: 2, width: '100%' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, ml: 3, mr: 3 }}>
-        <Typography variant="h5" sx={{ flexGrow: 1 }}>Processos</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 1, mr: 3 }}>
         <Tooltip title="Novo Processo">
-          <IconButton color="primary" size="medium" onClick={handleOpen} sx={{ ml: 1 }}>
+          <IconButton color="primary" size="medium" onClick={handleOpen}>
             <AddIcon fontSize="medium" />
           </IconButton>
         </Tooltip>
       </Box>
       <Box sx={{ ml: 3, mr: 3 }}>
+        <Typography variant="h5" sx={{ mb: 1 }}>Processos</Typography>
         <div style={{ height: 500, width: '100%' }}>
           <DataGrid
             rows={processos}
@@ -183,7 +174,7 @@ function Processos() {
             disableSelectionOnClick
             onRowMouseEnter={(params) => setHoveredRow(params.id)}
             onRowMouseLeave={() => setHoveredRow(null)}
-            onRowClick={handleRowClick}
+            onRowClick={(params) => navigate(`/processos/${params.id}`)}
             sx={{ border: 0 }}
           />
         </div>
@@ -191,10 +182,11 @@ function Processos() {
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editId ? 'Editar Processo' : 'Novo Processo'}</DialogTitle>
         <DialogContent>
-          <TextField label="Número" name="numero" value={form.numero} onChange={handleChange} fullWidth margin="normal" />
           <TextField label="Título" name="titulo" value={form.titulo} onChange={handleChange} fullWidth margin="normal" />
+          <TextField label="Número" name="numero" value={form.numero} onChange={handleChange} fullWidth margin="normal" />
           <TextField label="Cliente" name="cliente" value={form.cliente} onChange={handleChange} fullWidth margin="normal" />
-          <TextField label="Status" name="status" value={form.status} onChange={handleChange} fullWidth margin="normal" />
+          <TextField label="Ação / Foro" name="acaoForo" value={form.acaoForo} onChange={handleChange} fullWidth margin="normal" />
+          <TextField label="Últ. Mov" name="ultMov" value={form.ultMov} onChange={handleChange} fullWidth margin="normal" />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancelar</Button>
