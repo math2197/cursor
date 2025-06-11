@@ -1,22 +1,60 @@
 import React, { useState } from 'react';
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Chip, Link, Stack, Tooltip, Paper, InputBase } from '@mui/material';
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Chip, Link, Stack, Tooltip, Paper, InputBase, Menu, MenuItem, Checkbox } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LabelIcon from '@mui/icons-material/Label';
+import PrintIcon from '@mui/icons-material/Print';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import SearchIcon from '@mui/icons-material/Search';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useNavigate } from 'react-router-dom';
 
 const mockEtiquetas = [
   { label: 'ABMT', color: 'warning' },
   { label: 'DRA. RAYLLA CASTRO', color: 'secondary' },
   { label: 'FAMÍLIA', color: 'info' },
+  { label: 'ARPEN - RJ', color: 'success' },
+  { label: 'CARTÓRIO. RIO DE JANEIRO', color: 'warning' },
+  { label: 'CORREGEDORIA', color: 'primary' },
+  { label: 'DRA. TAINAH', color: 'secondary' },
+  { label: 'AMAGIS-MG', color: 'info' },
+  { label: 'PAD', color: 'error' },
+  { label: 'REDES SOCIAIS', color: 'success' },
+  { label: 'TAC', color: 'primary' },
+  { label: 'TJMG', color: 'info' },
+  { label: 'RECEBIDO À CORREGEDORIA', color: 'warning' },
+  { label: 'TAC', color: 'primary' },
+  { label: 'TJAL', color: 'info' },
+  { label: 'AUDIÊNCIA 14.02.2025', color: 'success' },
 ];
 
 const mockProcessos = [
-  { id: 1, titulo: 'Ação de Cobrança', numero: '0001234-56.2024.8.26.0000', cliente: 'João Silva', acaoForo: 'Pedido de Providências', ultMov: '11/06/2025', etiquetas: [mockEtiquetas[0], mockEtiquetas[1]] },
-  { id: 2, titulo: 'Inventário', numero: '0005678-90.2024.8.26.0000', cliente: 'Maria Souza', acaoForo: 'Inventário', ultMov: '10/06/2025', etiquetas: [mockEtiquetas[2]] },
+  {
+    id: 1,
+    titulo: 'AJUTRA - ASSOCIACAO DOS JUÍZES DO TRABALHO X TRIBUNAL REGIONAL DO TRABALHO DA 1ª REGIÃO',
+    numero: '1000023-59.2024.5.90.0000',
+    status: 'Processo ativo',
+    cliente: 'ASSOCIAÇÃO BRASILEIRA DOS MAGISTRADOS DO TRABALHO',
+    pasta: 'CSJT',
+    acaoForo: 'PEDIDO DE PROVIDÊNCIAS',
+    acaoSub: 'Ministro Cláudio Mascarenhas Brandão',
+    ultMov: '11/06/2025',
+    etiquetas: [mockEtiquetas[0], mockEtiquetas[1]],
+  },
+  {
+    id: 2,
+    titulo: 'ASSOCIAÇÃO DOS REGISTRADORES DE PESSOAS NATURAIS DO ESTADO DO RIO DE JANEIRO – ARPEN-RJ X TRIBUNAL DE JUSTIÇA DO ESTADO DO RIO DE JANEIRO',
+    numero: '0008227-66.2024.2.00.0000',
+    status: 'Processo ativo',
+    cliente: 'ASSOCIAÇÃO DOS REGISTRADORES DE PESSOAS...',
+    pasta: 'CNJ',
+    acaoForo: 'PEDIDO DE PROVIDÊNCIAS',
+    acaoSub: 'Corregedoria',
+    ultMov: '11/06/2025',
+    etiquetas: [mockEtiquetas[3], mockEtiquetas[4], mockEtiquetas[5], mockEtiquetas[6]],
+  },
 ];
 
 function Processos() {
@@ -30,6 +68,9 @@ function Processos() {
   const [etiquetas, setEtiquetas] = useState(mockEtiquetas);
   const [novaEtiqueta, setNovaEtiqueta] = useState({ label: '', color: 'primary' });
   const [search, setSearch] = useState('');
+  const [statusAnchor, setStatusAnchor] = useState(null);
+  const [status, setStatus] = useState('Ativos');
+  const [selectionModel, setSelectionModel] = useState([]);
   const navigate = useNavigate();
 
   const handleOpen = () => {
@@ -112,22 +153,25 @@ function Processos() {
 
   const columns = [
     {
+      field: 'checkbox',
+      headerName: '',
+      width: 48,
+      sortable: false,
+      renderHeader: () => <Checkbox size="small" checked={selectionModel.length === filteredProcessos.length && filteredProcessos.length > 0} indeterminate={selectionModel.length > 0 && selectionModel.length < filteredProcessos.length} />,
+      renderCell: (params) => <Checkbox size="small" checked={selectionModel.includes(params.row.id)} />,
+      disableColumnMenu: true,
+      headerClassName: 'no-border',
+    },
+    {
       field: 'titulo',
-      headerName: 'Título',
-      flex: 2,
+      headerName: 'TÍTULO',
+      flex: 2.5,
+      minWidth: 320,
       sortable: false,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
-            <Link
-              component="button"
-              variant="body1"
-              underline="hover"
-              sx={{ fontWeight: 600, textAlign: 'left', flex: 1, color: '#1976d2', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-              onClick={() => navigate(`/processos/${params.row.id}`)}
-            >
-              {params.value}
-            </Link>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#222', lineHeight: 1.2, flex: 1, pr: 2, fontSize: 15 }}>{params.row.titulo}</Typography>
             <Box
               sx={{
                 display: hoveredRow === params.row.id ? 'flex' : 'none',
@@ -150,57 +194,66 @@ function Processos() {
               </Tooltip>
             </Box>
           </Box>
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 0.2 }}>{params.row.numero}</Typography>
-          <Box sx={{ mt: 0.5, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
+            <Typography variant="caption" sx={{ color: '#888', fontWeight: 500, mr: 1 }}>{params.row.status}</Typography>
+            <Typography variant="caption" sx={{ color: '#bbb', fontWeight: 400, mr: 1 }}>|</Typography>
+            <Typography variant="caption" sx={{ color: '#888', fontWeight: 400, mr: 1 }}>{params.row.numero}</Typography>
             {params.row.etiquetas && params.row.etiquetas.map((et, i) => (
-              <Chip 
-                key={i} 
-                label={et.label} 
-                color={et.color} 
-                size="small" 
-                sx={{ 
-                  height: 20, 
-                  '& .MuiChip-label': { 
-                    px: 1, 
-                    fontSize: '0.75rem',
-                    fontWeight: 500
-                  } 
-                }} 
+              <Chip
+                key={i}
+                label={et.label}
+                color={et.color}
+                size="small"
+                sx={{ height: 20, fontWeight: 600, bgcolor: 'background.paper', border: '1px solid #e0e0e0', color: 'inherit', '& .MuiChip-label': { px: 1, fontSize: '0.75rem', fontWeight: 600 } }}
               />
             ))}
           </Box>
         </Box>
       ),
     },
-    { field: 'cliente', headerName: 'Cliente', flex: 1, sortable: false },
-    { field: 'acaoForo', headerName: 'Ação / Foro', flex: 1, sortable: false },
-    { field: 'ultMov', headerName: 'Últ. Mov', flex: 0.7, sortable: false },
+    {
+      field: 'cliente',
+      headerName: 'CLIENTE / PASTA',
+      flex: 1.5,
+      minWidth: 200,
+      sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <Typography variant="body2" sx={{ fontWeight: 500, color: '#222', fontSize: 14 }}>{params.value}</Typography>
+          <Typography variant="caption" sx={{ color: '#888', fontWeight: 400 }}>{params.row.pasta}</Typography>
+        </Box>
+      ),
+    },
+    {
+      field: 'acaoForo',
+      headerName: 'AÇÃO / FORO',
+      flex: 1.5,
+      minWidth: 200,
+      sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <Typography variant="body2" sx={{ fontWeight: 500, color: '#222', fontSize: 14 }}>{params.value}</Typography>
+          <Typography variant="caption" sx={{ color: '#888', fontWeight: 400 }}>{params.row.acaoSub}</Typography>
+        </Box>
+      ),
+    },
+    {
+      field: 'ultMov',
+      headerName: 'ÚLT. MOV',
+      flex: 0.7,
+      minWidth: 100,
+      sortable: false,
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ fontWeight: 500, color: '#222', fontSize: 14 }}>{params.value}</Typography>
+      ),
+    },
   ];
 
   return (
     <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh', p: 0, m: 0, boxSizing: 'border-box', position: 'relative' }}>
-      <Tooltip title="Novo Processo">
-        <IconButton
-          color="primary"
-          size="medium"
-          onClick={handleOpen}
-          sx={{
-            position: 'fixed',
-            top: 80,
-            right: 32,
-            zIndex: 1301,
-            bgcolor: '#fff',
-            border: '1px solid #e0e0e0',
-            boxShadow: 1,
-            '&:hover': { bgcolor: '#f5f5f5' }
-          }}
-        >
-          <AddIcon fontSize="medium" />
-        </IconButton>
-      </Tooltip>
-      <Box sx={{ display: 'flex', alignItems: 'center', height: 64, borderBottom: '1px solid #e0e0e0', bgcolor: '#fff', pl: 0, pr: 2, m: 0 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, color: '#222', ml: 0, minWidth: 260, flex: 1, textAlign: 'left' }}>Processos e casos</Typography>
-        <Paper component="form" sx={{ p: '2px 8px', display: 'flex', alignItems: 'center', width: 320, mr: 2, boxShadow: 0, border: '1px solid #e0e0e0', bgcolor: '#fff' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 0, pt: 3, pb: 1, bgcolor: 'transparent', width: '100%' }}>
+        <Typography variant="h5" sx={{ fontWeight: 600, color: '#222', ml: 0, flex: 1, textAlign: 'left' }}>Processos e casos</Typography>
+        <Paper component="form" sx={{ p: '2px 8px', display: 'flex', alignItems: 'center', width: 260, boxShadow: 0, border: '1px solid #e0e0e0', bgcolor: '#fff' }}>
           <InputBase
             sx={{ ml: 1, flex: 1, fontSize: 15 }}
             placeholder="Digite algo para pesquisar"
@@ -212,55 +265,96 @@ function Processos() {
             <SearchIcon />
           </IconButton>
         </Paper>
+        <Button
+          variant="outlined"
+          endIcon={<ArrowDropDownIcon />}
+          sx={{ ml: 1, bgcolor: '#f7f7fa', border: '1px solid #e0e0e0', color: '#444', fontWeight: 500, textTransform: 'none', minWidth: 100 }}
+          onClick={e => setStatusAnchor(e.currentTarget)}
+        >
+          {status}
+        </Button>
+        <Menu anchorEl={statusAnchor} open={Boolean(statusAnchor)} onClose={() => setStatusAnchor(null)}>
+          <MenuItem onClick={() => { setStatus('Ativos'); setStatusAnchor(null); }}>Ativos</MenuItem>
+          <MenuItem onClick={() => { setStatus('Arquivados'); setStatusAnchor(null); }}>Arquivados</MenuItem>
+        </Menu>
+        <Tooltip title="Imprimir">
+          <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', ml: 1 }}><PrintIcon /></IconButton>
+        </Tooltip>
+        <Tooltip title="Exportar">
+          <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', ml: 1 }}><FileDownloadIcon /></IconButton>
+        </Tooltip>
+        <Tooltip title="Novo Processo">
+          <IconButton
+            color="primary"
+            size="large"
+            onClick={handleOpen}
+            sx={{ ml: 1, bgcolor: '#2196f3', color: '#fff', borderRadius: 2, boxShadow: 1, '&:hover': { bgcolor: '#1976d2' } }}
+          >
+            <AddIcon fontSize="medium" />
+          </IconButton>
+        </Tooltip>
       </Box>
-      <Box sx={{ width: '100%', p: 0, m: 0 }}>
-        <Paper elevation={0} sx={{ borderRadius: 0, border: 'none', boxShadow: 0, mt: 0, ml: 0, width: '100%', p: 0, m: 0 }}>
-          <div style={{ height: 'calc(100vh - 64px - 56px)', width: '100%' }}>
-            <DataGrid
-              rows={filteredProcessos}
-              columns={columns}
-              pageSize={8}
-              rowsPerPageOptions={[8, 25, 100]}
-              disableSelectionOnClick
-              onRowMouseEnter={(params) => setHoveredRow(params.id)}
-              onRowMouseLeave={() => setHoveredRow(null)}
-              onRowClick={(params) => navigate(`/processos/${params.id}`)}
-              sx={{ 
-                border: 0, 
-                fontSize: 15, 
-                background: '#fff',
-                width: '100%',
-                '& .MuiDataGrid-row': { 
-                  minHeight: 56, 
-                  maxHeight: 56,
-                  '&:hover': {
-                    bgcolor: '#f5f5f5'
-                  }
-                },
-                '& .MuiDataGrid-cell': { 
-                  py: 0.2, 
-                  px: 1,
-                  borderBottom: '1px solid #f0f0f0',
-                  overflow: 'visible',
-                  whiteSpace: 'normal',
-                  wordBreak: 'break-word',
-                  lineHeight: 1.2,
-                  maxWidth: 'none',
-                },
-                '& .MuiDataGrid-columnHeaders': { 
-                  bgcolor: '#fafbfc', 
-                  color: '#222', 
-                  fontWeight: 600, 
-                  fontSize: 14,
-                  borderBottom: '1px solid #e0e0e0',
-                  minHeight: 40,
-                  maxHeight: 40
-                }
-              }}
-            />
-          </div>
-        </Paper>
+      <Box sx={{ display: 'flex', alignItems: 'center', px: 0, pb: 1, pt: 0, fontSize: 15, color: '#666' }}>
+        <Typography sx={{ fontWeight: 500, fontSize: 15, color: '#666', mr: 2 }}>
+          <span style={{ fontWeight: 600 }}>{selectionModel.length > 0 ? selectionModel.length : filteredProcessos.length}</span> de 157 processos e casos
+        </Typography>
       </Box>
+      <Paper elevation={0} sx={{ borderRadius: 2, border: '1px solid #e0e0e0', boxShadow: 0, mt: 0, ml: 0, width: '100%', p: 0, m: 0 }}>
+        <div style={{ height: 520, width: '100%' }}>
+          <DataGrid
+            rows={filteredProcessos}
+            columns={columns}
+            pageSize={8}
+            rowsPerPageOptions={[8, 25, 100]}
+            checkboxSelection={false}
+            disableSelectionOnClick
+            onRowMouseEnter={(params) => setHoveredRow(params.id)}
+            onRowMouseLeave={() => setHoveredRow(null)}
+            onRowClick={(params) => navigate(`/processos/${params.id}`)}
+            selectionModel={selectionModel}
+            onSelectionModelChange={setSelectionModel}
+            sx={{
+              border: 0,
+              fontSize: 15,
+              background: '#fff',
+              width: '100%',
+              '& .MuiDataGrid-row': {
+                minHeight: 64,
+                maxHeight: 64,
+                borderBottom: '1px solid #f0f0f0',
+                '&:hover': {
+                  bgcolor: '#f5f5f5',
+                },
+              },
+              '& .MuiDataGrid-cell': {
+                py: 0.2,
+                px: 1,
+                borderBottom: 'none',
+                overflow: 'visible',
+                whiteSpace: 'normal',
+                wordBreak: 'break-word',
+                lineHeight: 1.2,
+                maxWidth: 'none',
+              },
+              '& .MuiDataGrid-columnHeaders': {
+                bgcolor: '#fafbfc',
+                color: '#222',
+                fontWeight: 700,
+                fontSize: 14,
+                borderBottom: '1px solid #e0e0e0',
+                minHeight: 48,
+                maxHeight: 48,
+              },
+              '& .MuiCheckbox-root': {
+                p: 0.5,
+              },
+              '& .no-border': {
+                border: 'none',
+              },
+            }}
+          />
+        </div>
+      </Paper>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editId ? 'Editar Processo' : 'Novo Processo'}</DialogTitle>
         <DialogContent>
