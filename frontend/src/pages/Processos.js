@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Chip, Link, Stack } from '@mui/material';
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Chip, Link, Stack, Tooltip } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -131,25 +131,41 @@ function Processos() {
     {
       field: 'acoes',
       headerName: 'Ações',
-      width: 120,
+      width: 80,
       sortable: false,
       renderCell: (params) => (
-        <Box sx={{ display: hoveredRow === params.row.id ? 'flex' : 'none', gap: 1 }}>
-          <IconButton color="primary" onClick={() => handleEdit(params.row.id)}><EditIcon /></IconButton>
-          <IconButton color="secondary" onClick={() => handleOpenEtiquetas(params.row)}><LabelIcon /></IconButton>
-          <IconButton color="error" onClick={() => handleDelete(params.row.id)}><DeleteIcon /></IconButton>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 0.5,
+            opacity: hoveredRow === params.row.id ? 1 : 0,
+            transition: 'opacity 0.2s',
+            pointerEvents: hoveredRow === params.row.id ? 'auto' : 'none',
+          }}
+        >
+          <Tooltip title="Editar">
+            <IconButton size="small" color="primary" onClick={e => { e.stopPropagation(); handleEdit(params.row.id); }}><EditIcon fontSize="small" /></IconButton>
+          </Tooltip>
+          <Tooltip title="Etiquetas">
+            <IconButton size="small" color="secondary" onClick={e => { e.stopPropagation(); handleOpenEtiquetas(params.row); }}><LabelIcon fontSize="small" /></IconButton>
+          </Tooltip>
+          <Tooltip title="Excluir">
+            <IconButton size="small" color="error" onClick={e => { e.stopPropagation(); handleDelete(params.row.id); }}><DeleteIcon fontSize="small" /></IconButton>
+          </Tooltip>
         </Box>
       ),
     },
   ];
 
   return (
-    <Box sx={{ maxWidth: '1100px', margin: '0 auto', mt: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h5">Processos</Typography>
-        <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={handleOpen} sx={{ minWidth: 150, fontWeight: 600 }}>
-          NOVO PROCESSO
-        </Button>
+    <Box sx={{ pl: 0, pr: 2, pt: 2, width: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h5" sx={{ flexGrow: 1 }}>Processos</Typography>
+        <Tooltip title="Novo Processo">
+          <IconButton color="primary" size="medium" onClick={handleOpen} sx={{ ml: 1 }}>
+            <AddIcon fontSize="medium" />
+          </IconButton>
+        </Tooltip>
       </Box>
       <div style={{ height: 500, width: '100%' }}>
         <DataGrid
