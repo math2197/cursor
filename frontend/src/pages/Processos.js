@@ -251,7 +251,7 @@ function Processos() {
 
   return (
     <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh', p: 0, m: 0, boxSizing: 'border-box', position: 'relative' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 0, pt: 3, pb: 1, bgcolor: 'transparent', width: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: 0, pt: 3, pb: 1, bgcolor: 'transparent', width: '100%' }}>
         <Typography variant="h5" sx={{ fontWeight: 600, color: '#222', ml: 0, flex: 1, textAlign: 'left' }}>Processos e casos</Typography>
         <Paper component="form" sx={{ p: '2px 8px', display: 'flex', alignItems: 'center', width: 260, boxShadow: 0, border: '1px solid #e0e0e0', bgcolor: '#fff' }}>
           <InputBase
@@ -268,7 +268,7 @@ function Processos() {
         <Button
           variant="outlined"
           endIcon={<ArrowDropDownIcon />}
-          sx={{ ml: 1, bgcolor: '#f7f7fa', border: '1px solid #e0e0e0', color: '#444', fontWeight: 500, textTransform: 'none', minWidth: 100 }}
+          sx={{ ml: 1, bgcolor: '#f7f7fa', border: '1px solid #e0e0e0', color: '#444', fontWeight: 500, textTransform: 'none', minWidth: 100, height: 40, borderRadius: 2, px: 1.5 }}
           onClick={e => setStatusAnchor(e.currentTarget)}
         >
           {status}
@@ -278,17 +278,17 @@ function Processos() {
           <MenuItem onClick={() => { setStatus('Arquivados'); setStatusAnchor(null); }}>Arquivados</MenuItem>
         </Menu>
         <Tooltip title="Imprimir">
-          <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', ml: 1 }}><PrintIcon /></IconButton>
+          <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', ml: 0.5, '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}><PrintIcon /></IconButton>
         </Tooltip>
         <Tooltip title="Exportar">
-          <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', ml: 1 }}><FileDownloadIcon /></IconButton>
+          <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', ml: 0.5, '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}><FileDownloadIcon /></IconButton>
         </Tooltip>
         <Tooltip title="Novo Processo">
           <IconButton
             color="primary"
             size="large"
             onClick={handleOpen}
-            sx={{ ml: 1, bgcolor: '#2196f3', color: '#fff', borderRadius: 2, boxShadow: 1, '&:hover': { bgcolor: '#1976d2' } }}
+            sx={{ ml: 0.5, bgcolor: '#2196f3', color: '#fff', borderRadius: '50%', width: 44, height: 44, boxShadow: 1, border: '1.5px solid #1976d2', '&:hover': { bgcolor: '#1976d2', boxShadow: 2 } }}
           >
             <AddIcon fontSize="medium" />
           </IconButton>
