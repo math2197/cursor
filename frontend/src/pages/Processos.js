@@ -210,8 +210,8 @@ function Processos() {
                 fontSize: 15, 
                 background: '#fff',
                 '& .MuiDataGrid-row': { 
-                  minHeight: 40, 
-                  maxHeight: 40,
+                  minHeight: 56, 
+                  maxHeight: 56,
                   '&:hover': {
                     bgcolor: '#f5f5f5'
                   }

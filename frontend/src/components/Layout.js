@@ -67,7 +67,7 @@ function Layout({ children }) {
           flexShrink: 0,
           position: 'fixed',
           left: 0,
-          top: 0,
+          top: `${appBarHeight}px`,
           height: '100vh',
           [`& .MuiDrawer-paper`]: {
             width: drawerWidth,
@@ -75,7 +75,7 @@ function Layout({ children }) {
             borderRight: '1px solid #e0e0e0',
             position: 'fixed',
             left: 0,
-            top: 0,
+            top: `${appBarHeight}px`,
             height: '100vh',
             bgcolor: '#fff',
           },
@@ -97,9 +97,9 @@ function Layout({ children }) {
       <AppBar
         position="fixed"
         sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-          left: `${drawerWidth}px`,
-          width: `calc(100% - ${drawerWidth}px)`,
+          zIndex: (theme) => theme.zIndex.drawer + 2,
+          left: 0,
+          width: '100%',
           height: appBarHeight,
           boxShadow: 'none',
           borderBottom: '1px solid #e0e0e0',
