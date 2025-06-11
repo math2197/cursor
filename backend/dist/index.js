@@ -14,6 +14,7 @@ const process_routes_1 = __importDefault(require("./routes/process.routes"));
 const task_routes_1 = __importDefault(require("./routes/task.routes"));
 const tag_routes_1 = __importDefault(require("./routes/tag.routes"));
 const report_routes_1 = __importDefault(require("./routes/report.routes"));
+const authController_1 = require("./controllers/authController");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const prisma = new client_1.PrismaClient();
@@ -26,6 +27,7 @@ app.use('/api/processes', process_routes_1.default);
 app.use('/api/tasks', task_routes_1.default);
 app.use('/api/tags', tag_routes_1.default);
 app.use('/api/reports', report_routes_1.default);
+(0, authController_1.createAdminUser)().catch(console.error);
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
