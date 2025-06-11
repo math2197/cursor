@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Chip, Link, Stack, Tooltip, Paper, InputBase, Menu, MenuItem, Checkbox } from '@mui/material';
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Chip, Link, Stack, Tooltip, Paper, InputBase, Menu, MenuItem, Checkbox, Tabs, Tab, Autocomplete } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -71,6 +71,8 @@ function Processos() {
   const [statusAnchor, setStatusAnchor] = useState(null);
   const [status, setStatus] = useState('Ativos');
   const [selectionModel, setSelectionModel] = useState([]);
+  const [tabStatus, setTabStatus] = useState(0);
+  const [etiquetaFiltro, setEtiquetaFiltro] = useState([]);
   const navigate = useNavigate();
 
   const handleOpen = () => {
@@ -144,12 +146,15 @@ function Processos() {
     ));
   };
 
-  const filteredProcessos = processos.filter(p =>
-    p.titulo.toLowerCase().includes(search.toLowerCase()) ||
-    p.numero.toLowerCase().includes(search.toLowerCase()) ||
-    p.cliente.toLowerCase().includes(search.toLowerCase()) ||
-    p.acaoForo.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredProcessos = processos.filter(p => {
+    const statusMatch = tabStatus === 0 ? p.status === 'Processo ativo' : p.status !== 'Processo ativo';
+    const searchMatch = p.titulo.toLowerCase().includes(search.toLowerCase()) ||
+      p.numero.toLowerCase().includes(search.toLowerCase()) ||
+      p.cliente.toLowerCase().includes(search.toLowerCase()) ||
+      p.acaoForo.toLowerCase().includes(search.toLowerCase());
+    const etiquetasMatch = etiquetaFiltro.length === 0 || etiquetaFiltro.every(fil => p.etiquetas.some(et => et.label === fil.label));
+    return statusMatch && searchMatch && etiquetasMatch;
+  });
 
   const columns = [
     {
@@ -251,26 +256,38 @@ function Processos() {
 
   return (
     <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh', p: 0, m: 0, boxSizing: 'border-box', position: 'relative' }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5, px: 0, pt: 3, pb: 0, bgcolor: 'transparent', width: '100%' }}>
-        <Button
-          variant="outlined"
-          endIcon={<ArrowDropDownIcon />}
-          sx={{ bgcolor: '#f7f7fa', border: '1px solid #e0e0e0', color: '#444', fontWeight: 500, textTransform: 'none', height: 36, borderRadius: 2, px: 2, minWidth: 0, mb: 0.5 }}
-          onClick={e => setStatusAnchor(e.currentTarget)}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 0, pt: 3, pb: 0, bgcolor: 'transparent', width: '100%' }}>
+        <Tabs
+          value={tabStatus}
+          onChange={(_e, v) => setTabStatus(v)}
+          sx={{ minHeight: 36, '& .MuiTab-root': { minHeight: 36, textTransform: 'none', fontWeight: 600, fontSize: 15, px: 2 }, '& .MuiTabs-indicator': { bgcolor: '#1976d2', height: 3, borderRadius: 2 } }}
         >
-          {status}
-        </Button>
-        <Menu anchorEl={statusAnchor} open={Boolean(statusAnchor)} onClose={() => setStatusAnchor(null)}>
-          <MenuItem onClick={() => { setStatus('Ativos'); setStatusAnchor(null); }}>Ativos</MenuItem>
-          <MenuItem onClick={() => { setStatus('Arquivados'); setStatusAnchor(null); }}>Arquivados</MenuItem>
-        </Menu>
-        <Box sx={{ display: 'flex', alignItems: 'center', fontSize: 15, color: '#666', mt: 0.5 }}>
-          <Typography sx={{ fontWeight: 500, fontSize: 15, color: '#666', mr: 2 }}>
-            <span style={{ fontWeight: 600 }}>{selectionModel.length > 0 ? selectionModel.length : filteredProcessos.length}</span> de 157 processos
-          </Typography>
-        </Box>
-      </Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, position: 'absolute', top: 32, right: 0 }}>
+          <Tab label="Ativos" />
+          <Tab label="Arquivados" />
+        </Tabs>
+        <Autocomplete
+          multiple
+          options={etiquetas}
+          getOptionLabel={option => option.label}
+          value={etiquetaFiltro}
+          onChange={(_e, value) => setEtiquetaFiltro(value)}
+          renderTags={(value, getTagProps) =>
+            value.map((option, index) => (
+              <Chip
+                label={option.label}
+                color={option.color}
+                size="small"
+                {...getTagProps({ index })}
+                sx={{ height: 22, fontWeight: 600, bgcolor: 'background.paper', border: '1px solid #e0e0e0', color: 'inherit', '& .MuiChip-label': { px: 1, fontSize: '0.75rem', fontWeight: 600 } }}
+              />
+            ))
+          }
+          renderInput={params => (
+            <TextField {...params} variant="outlined" size="small" label="Filtrar por etiqueta" sx={{ minWidth: 220, bgcolor: '#fff', borderRadius: 2 }} />
+          )}
+          sx={{ minWidth: 220, maxWidth: 320 }}
+        />
+        <Box sx={{ flex: 1 }} />
         <Tooltip title="Imprimir">
           <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}><PrintIcon /></IconButton>
         </Tooltip>
@@ -287,6 +304,11 @@ function Processos() {
             <AddIcon fontSize="medium" />
           </IconButton>
         </Tooltip>
+      </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', fontSize: 15, color: '#666', mt: 1, mb: 0.5 }}>
+        <Typography sx={{ fontWeight: 500, fontSize: 15, color: '#666', mr: 2 }}>
+          <span style={{ fontWeight: 600 }}>{selectionModel.length > 0 ? selectionModel.length : filteredProcessos.length}</span> de 157 processos
+        </Typography>
       </Box>
       <Paper elevation={0} sx={{ borderRadius: 2, border: '1px solid #e0e0e0', boxShadow: 0, mt: 2, ml: 0, width: '100%', p: 0, m: 0 }}>
         <div style={{ height: 520, width: '100%' }}>
