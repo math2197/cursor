@@ -75,7 +75,7 @@ function ProcessoDetalhes() {
   };
 
   return (
-    <Box sx={{ p: 3, bgcolor: '#f7f7fa', minHeight: '100vh', width: '100vw', maxWidth: '100vw', boxSizing: 'border-box', display: 'flex', justifyContent: 'center' }}>
+    <Box sx={{ p: 3, bgcolor: '#f7f7fa', minHeight: '100vh', width: '100%', boxSizing: 'border-box', display: 'flex', justifyContent: 'center' }}>
       <Box sx={{ width: '100%', maxWidth: 1100 }}>
         {/* Header do processo */}
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
