@@ -36,6 +36,7 @@ model User {
   processes Process[]
   tasks     Task[]
   documents Document[] @relation("UserDocuments")
+  photoUrl  String?
 }
 
 model Client {

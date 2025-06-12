@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Chip, Tabs, Tab, Paper, Grid, Card, CardContent, Divider, Link, Stack, IconButton, Tooltip, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
@@ -9,6 +9,9 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import ForumIcon from '@mui/icons-material/Forum';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import DeleteIcon from '@mui/icons-material/Delete';
+import axios from 'axios';
+import API_URL from '../services/api';
 
 const mockProcesso = {
   id: 1,
@@ -69,9 +72,42 @@ function ProcessoDetalhes() {
 
   // Estado para upload de documentos (mock)
   const [docs, setDocs] = useState([]);
-  const handleUpload = (e) => {
-    const files = Array.from(e.target.files);
-    setDocs((prev) => [...prev, ...files.map(f => ({ name: f.name }))]);
+  const processId = mockProcesso.id; // Substituir pelo id real do processo
+
+  const fetchDocuments = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${API_URL}/api/documents/process/${processId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setDocs(res.data);
+    } catch (err) {
+      setDocs([]);
+    }
+  };
+
+  useEffect(() => { fetchDocuments(); }, []);
+
+  const handleUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    const token = localStorage.getItem('token');
+    await axios.post(`${API_URL}/api/documents/process/${processId}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
+    });
+    fetchDocuments();
+  };
+
+  const handleDeleteProcess = async () => {
+    if(window.confirm('Tem certeza que deseja excluir este processo?')) {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${API_URL}/api/processes/${processId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      window.location.href = '/processos';
+    }
   };
 
   return (
@@ -110,6 +146,11 @@ function ProcessoDetalhes() {
             <Tooltip title="Gerenciar Etiquetas">
               <IconButton onClick={handleEtiquetas} color="secondary" sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}>
                 <LabelIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Excluir Processo">
+              <IconButton onClick={handleDeleteProcess} color="error" sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}>
+                <DeleteIcon />
               </IconButton>
             </Tooltip>
           </Stack>
@@ -217,7 +258,7 @@ function ProcessoDetalhes() {
                           <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
                             <Button variant="outlined" size="small" startIcon={<UploadFileIcon />} component="label">
                               Anexar
-                              <input type="file" hidden multiple onChange={handleUpload} />
+                              <input type="file" hidden onChange={handleUpload} />
                             </Button>
                             {docs.length > 0 && <Typography variant="caption" color="text.secondary">{docs.length} documento(s) anexado(s)</Typography>}
                           </Stack>
@@ -226,7 +267,9 @@ function ProcessoDetalhes() {
                           ) : (
                             <Stack spacing={0.5}>
                               {docs.map((doc, i) => (
-                                <Typography key={i} variant="body2" color="text.secondary">{doc.name}</Typography>
+                                <a key={i} href={`${API_URL}${doc.url}`} target="_blank" rel="noopener noreferrer">
+                                  <Typography variant="body2" color="text.secondary">{doc.name}</Typography>
+                                </a>
                               ))}
                             </Stack>
                           )}

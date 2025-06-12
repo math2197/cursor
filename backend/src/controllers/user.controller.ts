@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../config/database';
 import { Role } from '@prisma/client';
+import path from 'path';
+import fs from 'fs';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -276,6 +278,26 @@ export const updatePassword = async (req: Request, res: Response) => {
     return res.status(204).send();
   } catch (error) {
     console.error('Erro ao atualizar senha:', error);
+    return res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+};
+
+export const uploadProfilePhoto = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.user!;
+    if (!req.file) return res.status(400).json({ message: 'Arquivo não enviado' });
+    const file = req.file;
+    const photoUrl = `/uploads/${file.filename}`;
+    // Remove foto antiga se existir
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (user && user.photoUrl) {
+      const oldPath = path.join(__dirname, '../../uploads', path.basename(user.photoUrl));
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    }
+    await prisma.user.update({ where: { id }, data: { photoUrl } });
+    return res.json({ photoUrl });
+  } catch (error) {
+    console.error('Erro ao fazer upload da foto de perfil:', error);
     return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 }; 

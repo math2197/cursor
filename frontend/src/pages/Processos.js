@@ -255,7 +255,7 @@ function Processos() {
     {
       field: 'acoes',
       headerName: '',
-      width: 90,
+      width: 120,
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => (
@@ -268,6 +268,11 @@ function Processos() {
           <Tooltip title="Gerenciar Etiquetas">
             <IconButton size="small" color="secondary" onClick={e => { e.stopPropagation(); handleOpenEtiquetas(params.row); }}>
               <LabelIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Excluir Processo">
+            <IconButton size="small" color="error" onClick={e => { e.stopPropagation(); if(window.confirm('Tem certeza que deseja excluir este processo?')) handleDelete(params.row.id); }}>
+              <DeleteIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         </Box>

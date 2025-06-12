@@ -1,6 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Avatar, Button, TextField, Typography, Box, Paper } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import axios from 'axios';
+import API_URL from '../services/api';
 
 function Perfil() {
   // Mock de dados do usuário
@@ -8,15 +10,37 @@ function Perfil() {
     name: 'Administrador',
     email: 'admin@admin.com',
     photo: null,
+    photoUrl: null,
   });
   const [photoPreview, setPhotoPreview] = useState(null);
   const fileInputRef = useRef();
 
-  const handlePhotoChange = (e) => {
+  useEffect(() => {
+    // Buscar dados reais do usuário, incluindo foto
+    const fetchProfile = async () => {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${API_URL}/api/users/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUser(u => ({ ...u, ...res.data, photoUrl: res.data.photoUrl }));
+      setPhotoPreview(res.data.photoUrl ? `${API_URL}${res.data.photoUrl}` : null);
+    };
+    fetchProfile();
+  }, []);
+
+  const handlePhotoChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       setUser({ ...user, photo: file });
       setPhotoPreview(URL.createObjectURL(file));
+      // Upload real
+      const formData = new FormData();
+      formData.append('file', file);
+      const token = localStorage.getItem('token');
+      const res = await axios.post(`${API_URL}/api/users/profile/photo`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
+      });
+      setPhotoPreview(`${API_URL}${res.data.photoUrl}`);
     }
   };
 
