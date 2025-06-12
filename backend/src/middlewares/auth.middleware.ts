@@ -3,15 +3,20 @@ import jwt from 'jsonwebtoken';
 import { Role } from '@prisma/client';
 
 interface TokenPayload {
-  id: string;
-  email: string;
-  role: Role;
+  id?: string;
+  userId?: string;
+  email?: string;
+  role?: Role;
 }
 
 declare global {
   namespace Express {
     interface Request {
-      user?: TokenPayload;
+      user?: {
+        id: string;
+        email?: string;
+        role?: Role;
+      };
     }
   }
 }
@@ -40,7 +45,11 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret') as TokenPayload;
-    req.user = decoded;
+    req.user = {
+      id: decoded.id || decoded.userId || '',
+      email: decoded.email,
+      role: decoded.role
+    };
     next();
   } catch (error) {
     res.status(401).json({ message: 'Token inválido' });
@@ -54,7 +63,7 @@ export const roleMiddleware = (roles: Role[]) => {
       return;
     }
 
-    if (!roles.includes(req.user.role)) {
+    if (!req.user.role || !roles.includes(req.user.role)) {
       res.status(403).json({ message: 'Acesso negado' });
       return;
     }

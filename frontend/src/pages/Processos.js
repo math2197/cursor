@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Chip, Link, Stack, Tooltip, Paper, InputBase, Menu, MenuItem, Checkbox, Tabs, Tab, Autocomplete } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
@@ -10,6 +10,8 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import API_URL from '../services/api';
 
 const mockEtiquetas = [
   { label: 'ABMT', color: 'warning' },
@@ -58,9 +60,17 @@ const mockProcessos = [
 ];
 
 function Processos() {
-  const [processos, setProcessos] = useState(mockProcessos);
+  const [processos, setProcessos] = useState([]);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ titulo: '', numero: '', cliente: '', acaoForo: '', ultMov: '', etiquetas: [] });
+  const [form, setForm] = useState({ 
+    title: '', 
+    number: '', 
+    clientId: '', 
+    status: 'Ativo',
+    description: '',
+    requerente: '',
+    requerido: ''
+  });
   const [editId, setEditId] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
   const [openEtiquetas, setOpenEtiquetas] = useState(false);
@@ -75,8 +85,32 @@ function Processos() {
   const [etiquetaFiltro, setEtiquetaFiltro] = useState([]);
   const navigate = useNavigate();
 
+  const fetchProcessos = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/api/processes`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setProcessos(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar processos:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProcessos();
+  }, []);
+
   const handleOpen = () => {
-    setForm({ titulo: '', numero: '', cliente: '', acaoForo: '', ultMov: '', etiquetas: [] });
+    setForm({ 
+      title: '', 
+      number: '', 
+      clientId: '', 
+      status: 'Ativo',
+      description: '',
+      requerente: '',
+      requerido: ''
+    });
     setEditId(null);
     setOpen(true);
   };
@@ -89,28 +123,56 @@ function Processos() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSave = () => {
-    if (editId) {
-      setProcessos(processos.map(p => p.id === editId ? { ...form, id: editId } : p));
-    } else {
-      setProcessos([...processos, { ...form, id: Date.now() }]);
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (editId) {
+        await axios.put(`${API_URL}/api/processes/${editId}`, form, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      } else {
+        await axios.post(`${API_URL}/api/processes`, form, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+      fetchProcessos();
+      setOpen(false);
+    } catch (error) {
+      console.error('Erro ao salvar processo:', error);
     }
-    setOpen(false);
   };
 
   const handleEdit = (id) => {
     const proc = processos.find(p => p.id === id);
-    setForm(proc);
+    setForm({
+      title: proc.title,
+      number: proc.number,
+      clientId: proc.clientId,
+      status: proc.status,
+      description: proc.description,
+      requerente: proc.requerente,
+      requerido: proc.requerido
+    });
     setEditId(id);
     setOpen(true);
   };
 
-  const handleDelete = (id) => {
-    setProcessos(processos.filter(p => p.id !== id));
+  const handleDelete = async (id) => {
+    if (window.confirm('Tem certeza que deseja excluir este processo?')) {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.delete(`${API_URL}/api/processes/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        fetchProcessos();
+      } catch (error) {
+        console.error('Erro ao deletar processo:', error);
+      }
+    }
   };
 
-  const handleRowClick = (params) => {
-    navigate(`/processos/${params.id}`);
+  const handleRowClick = (processo) => {
+    navigate(`/processos/${processo.id}`);
   };
 
   const handleOpenEtiquetas = (processo) => {
@@ -148,10 +210,9 @@ function Processos() {
 
   const filteredProcessos = processos.filter(p => {
     const statusMatch = tabStatus === 0 ? p.status === 'Processo ativo' : p.status !== 'Processo ativo';
-    const searchMatch = p.titulo.toLowerCase().includes(search.toLowerCase()) ||
-      p.numero.toLowerCase().includes(search.toLowerCase()) ||
-      p.cliente.toLowerCase().includes(search.toLowerCase()) ||
-      p.acaoForo.toLowerCase().includes(search.toLowerCase());
+    const searchMatch = p.title?.toLowerCase().includes(search.toLowerCase()) ||
+      p.number?.toLowerCase().includes(search.toLowerCase()) ||
+      p.client?.name?.toLowerCase().includes(search.toLowerCase());
     const etiquetasMatch = etiquetaFiltro.length === 0 || etiquetaFiltro.every(fil => p.etiquetas.some(et => et.label === fil.label));
     return statusMatch && searchMatch && etiquetasMatch;
   });
@@ -168,7 +229,7 @@ function Processos() {
       headerClassName: 'no-border',
     },
     {
-      field: 'titulo',
+      field: 'title',
       headerName: 'TÍTULO',
       flex: 2.5,
       minWidth: 320,
@@ -176,7 +237,7 @@ function Processos() {
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#222', lineHeight: 1.2, flex: 1, pr: 2, fontSize: 15 }}>{params.row.titulo}</Typography>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#222', lineHeight: 1.2, flex: 1, pr: 2, fontSize: 15 }}>{params.row.title}</Typography>
             <Box
               sx={{
                 display: hoveredRow === params.row.id ? 'flex' : 'none',
@@ -202,7 +263,7 @@ function Processos() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
             <Typography variant="caption" sx={{ color: '#888', fontWeight: 500, mr: 1 }}>{params.row.status}</Typography>
             <Typography variant="caption" sx={{ color: '#bbb', fontWeight: 400, mr: 1 }}>|</Typography>
-            <Typography variant="caption" sx={{ color: '#888', fontWeight: 400, mr: 1 }}>{params.row.numero}</Typography>
+            <Typography variant="caption" sx={{ color: '#888', fontWeight: 400, mr: 1 }}>{params.row.number}</Typography>
             {params.row.etiquetas && params.row.etiquetas.map((et, i) => (
               <Chip
                 key={i}
@@ -217,14 +278,14 @@ function Processos() {
       ),
     },
     {
-      field: 'cliente',
+      field: 'client',
       headerName: 'CLIENTE / PASTA',
       flex: 1.5,
       minWidth: 200,
       sortable: false,
       renderCell: (params) => (
         <Box>
-          <Typography variant="body2" sx={{ fontWeight: 500, color: '#222', fontSize: 14 }}>{params.value}</Typography>
+          <Typography variant="body2" sx={{ fontWeight: 500, color: '#222', fontSize: 14 }}>{params.value?.name}</Typography>
           <Typography variant="caption" sx={{ color: '#888', fontWeight: 400 }}>{params.row.pasta}</Typography>
         </Box>
       ),
@@ -271,7 +332,7 @@ function Processos() {
             </IconButton>
           </Tooltip>
           <Tooltip title="Excluir Processo">
-            <IconButton size="small" color="error" onClick={e => { e.stopPropagation(); if(window.confirm('Tem certeza que deseja excluir este processo?')) handleDelete(params.row.id); }}>
+            <IconButton size="small" color="error" onClick={e => { e.stopPropagation(); handleDelete(params.row.id); }}>
               <DeleteIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -281,129 +342,160 @@ function Processos() {
   ];
 
   return (
-    <Box sx={{ width: '100%', bgcolor: '#f7f7fa', minHeight: '100vh', p: 0, m: 0, boxSizing: 'border-box', position: 'relative' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 0, pt: 3, pb: 0, bgcolor: 'transparent', width: '100%' }}>
-        <Tabs
-          value={tabStatus}
-          onChange={(_e, v) => setTabStatus(v)}
-          sx={{ minHeight: 36, '& .MuiTab-root': { minHeight: 36, textTransform: 'none', fontWeight: 600, fontSize: 15, px: 2 }, '& .MuiTabs-indicator': { bgcolor: '#1976d2', height: 3, borderRadius: 2 } }}
-        >
-          <Tab label="Ativos" />
-          <Tab label="Arquivados" />
-        </Tabs>
-        <Autocomplete
-          multiple
-          options={etiquetas}
-          getOptionLabel={option => option.label}
-          value={etiquetaFiltro}
-          onChange={(_e, value) => setEtiquetaFiltro(value)}
-          renderTags={(value, getTagProps) =>
-            value.map((option, index) => (
-              <Chip
-                key={index}
-                label={option.label}
-                color={option.color}
-                size="small"
-                {...getTagProps({ index })}
-                sx={{ height: 22, fontWeight: 600, bgcolor: 'background.paper', border: '1px solid #e0e0e0', color: 'inherit', borderRadius: 1, '& .MuiChip-label': { px: 1, fontSize: '0.75rem', fontWeight: 600 } }}
-              />
-            ))
-          }
-          renderInput={params => (
-            <TextField {...params} variant="outlined" size="small" label="Filtrar por etiqueta" sx={{ minWidth: 220, bgcolor: '#fff', borderRadius: 2 }} />
-          )}
-          sx={{ minWidth: 220, maxWidth: 320 }}
-        />
-        <Box sx={{ flex: 1 }} />
-        <Tooltip title="Imprimir">
-          <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}><PrintIcon /></IconButton>
-        </Tooltip>
-        <Tooltip title="Exportar">
-          <IconButton sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}><FileDownloadIcon /></IconButton>
-        </Tooltip>
-        <Tooltip title="Novo Processo">
-          <IconButton
-            color="primary"
-            size="large"
-            onClick={handleOpen}
-            sx={{ bgcolor: '#2196f3', color: '#fff', borderRadius: '50%', width: 44, height: 44, boxShadow: 1, border: '1.5px solid #1976d2', '&:hover': { bgcolor: '#1976d2', boxShadow: 2 } }}
-          >
-            <AddIcon fontSize="medium" />
-          </IconButton>
-        </Tooltip>
-      </Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', fontSize: 15, color: '#666', mt: 1, mb: 0.5 }}>
-        <Typography sx={{ fontWeight: 500, fontSize: 15, color: '#666', mr: 2 }}>
-          <span style={{ fontWeight: 600 }}>{selectionModel.length > 0 ? selectionModel.length : filteredProcessos.length}</span> de 157 processos
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        mb: 2,
+        px: 2,
+        pt: 2
+      }}>
+        <Typography variant="h5" sx={{ fontWeight: 500 }}>
+          Processos
         </Typography>
-      </Box>
-      <Paper elevation={3} sx={{ borderRadius: 2.5, boxShadow: '0 2px 12px #0001', border: 'none', mt: 2, ml: 0, width: '100%', p: 0, m: 0 }}>
-        <div style={{ height: 520, width: '100%' }}>
-          <DataGrid
-            rows={filteredProcessos}
-            columns={columns}
-            pageSize={8}
-            rowsPerPageOptions={[8, 25, 100]}
-            checkboxSelection={false}
-            disableSelectionOnClick
-            onRowMouseEnter={(params) => setHoveredRow(params.id)}
-            onRowMouseLeave={() => setHoveredRow(null)}
-            onRowClick={(params) => navigate(`/processos/${params.id}`)}
-            selectionModel={selectionModel}
-            onSelectionModelChange={setSelectionModel}
-            sx={{
-              border: 0,
-              fontSize: 15,
-              background: '#fff',
-              width: '100%',
-              '& .MuiDataGrid-row': {
-                minHeight: 64,
-                border: 'none',
-                borderRadius: 2,
-                margin: '4px 8px',
-                boxShadow: 'none',
-                transition: 'box-shadow 0.2s, background 0.2s',
-                '&:hover': {
-                  bgcolor: '#f5f7fa',
-                  boxShadow: '0 2px 8px #0001',
-                  borderRadius: 2,
-                },
-              },
-              '& .MuiDataGrid-cell': {
-                py: 1.2,
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          {selectedProcesso && (
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={handleDelete}
+              sx={{ 
+                minWidth: 'auto',
                 px: 2,
-                borderBottom: 'none',
-                overflow: 'visible',
-                whiteSpace: 'normal',
-                wordBreak: 'break-word',
-                lineHeight: 1.4,
-                maxWidth: 'initial',
-                height: 'auto',
-                alignItems: 'flex-start',
-                display: 'flex',
-                background: 'transparent',
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                bgcolor: '#fafbfc',
-                color: '#222',
-                fontWeight: 700,
-                fontSize: 14,
-                borderBottom: 'none',
-                minHeight: 48,
-                maxHeight: 48,
-                borderRadius: 2,
-              },
-              '& .MuiCheckbox-root': {
-                p: 0.5,
-              },
-              '& .no-border': {
-                border: 'none',
-              },
+                '& .MuiButton-startIcon': {
+                  mr: 0.5
+                }
+              }}
+            >
+              Excluir
+            </Button>
+          )}
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleOpen}
+            sx={{ 
+              minWidth: 'auto',
+              px: 2,
+              '& .MuiButton-startIcon': {
+                mr: 0.5
+              }
             }}
-            getRowHeight={() => 'auto'}
-          />
-        </div>
-      </Paper>
+          >
+            Novo Processo
+          </Button>
+        </Box>
+      </Box>
+
+      <Box sx={{ 
+        display: 'flex', 
+        gap: 2, 
+        p: 2, 
+        flex: 1,
+        minHeight: 0
+      }}>
+        <Paper 
+          elevation={0} 
+          sx={{ 
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            border: '1px solid',
+            borderColor: 'divider'
+          }}
+        >
+          <Box sx={{ 
+            p: 2, 
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+              Lista de Processos
+            </Typography>
+            <TextField
+              size="small"
+              placeholder="Buscar processos..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ width: 300 }}
+            />
+          </Box>
+
+          <TableContainer sx={{ flex: 1, overflow: 'auto' }}>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Número</TableCell>
+                  <TableCell>Cliente</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Último Movimento</TableCell>
+                  <TableCell>Data</TableCell>
+                  <TableCell width={100}>Ações</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredProcessos.map((processo) => (
+                  <TableRow 
+                    key={processo.id}
+                    hover
+                    selected={selectedProcesso?.id === processo.id}
+                    onClick={() => handleRowClick(processo)}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    <TableCell>{processo.number}</TableCell>
+                    <TableCell>{processo.client?.name}</TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={processo.status} 
+                        size="small"
+                        color={getStatusColor(processo.status)}
+                      />
+                    </TableCell>
+                    <TableCell>{processo.ultMov}</TableCell>
+                    <TableCell>{processo.ultMov}</TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <IconButton 
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(processo.id);
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton 
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEtiquetas(processo);
+                          }}
+                        >
+                          <LabelIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      </Box>
+
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>{editId ? 'Editar Processo' : 'Novo Processo'}</DialogTitle>
         <DialogContent>

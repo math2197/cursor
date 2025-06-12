@@ -22,8 +22,8 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET || 'sua_chave_secreta',
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET || 'default_secret',
       { expiresIn: '1d' }
     );
 
@@ -65,6 +65,12 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET || 'default_secret',
+      { expiresIn: '1d' }
+    );
+
     return res.status(201).json({
       user: {
         id: user.id,
@@ -72,6 +78,7 @@ export const register = async (req: Request, res: Response) => {
         email: user.email,
         role: user.role,
       },
+      token
     });
   } catch (error) {
     console.error('Erro no registro:', error);
@@ -89,7 +96,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 
     const decoded = jwt.verify(
       refreshToken,
-      process.env.JWT_SECRET || 'juridico_secret_key'
+      process.env.JWT_SECRET || 'default_secret'
     ) as { id: string };
 
     const user = await prisma.user.findUnique({
@@ -102,13 +109,13 @@ export const refreshToken = async (req: Request, res: Response) => {
 
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'juridico_secret_key',
+      process.env.JWT_SECRET || 'default_secret',
       { expiresIn: '1d' }
     );
 
     const newRefreshToken = jwt.sign(
       { id: user.id },
-      process.env.JWT_SECRET || 'juridico_secret_key',
+      process.env.JWT_SECRET || 'default_secret',
       { expiresIn: '7d' }
     );
 
