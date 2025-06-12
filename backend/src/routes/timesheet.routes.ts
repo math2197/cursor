@@ -9,7 +9,7 @@ let timesheets = [
   { id: '2', description: 'Estudo de caso', hours: 3, processId: '1' },
 ];
 
-router.get('/', (req, res) => res.json(timesheets));
+router.get('/', (_req, res) => res.json(timesheets));
 router.post('/', (req, res) => {
   const { description, hours, processId } = req.body;
   const newTimesheet = { id: String(Date.now()), description, hours, processId };

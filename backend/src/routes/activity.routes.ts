@@ -9,7 +9,7 @@ let activities = [
   { id: '2', title: 'Despacho', date: '2024-06-02', processId: '1' },
 ];
 
-router.get('/', (req, res) => res.json(activities));
+router.get('/', (_req, res) => res.json(activities));
 router.post('/', (req, res) => {
   const { title, date, processId } = req.body;
   const newActivity = { id: String(Date.now()), title, date, processId };

@@ -9,7 +9,7 @@ let expenses = [
   { id: '2', description: 'Cópia', value: 50, processId: '1' },
 ];
 
-router.get('/', (req, res) => res.json(expenses));
+router.get('/', (_req, res) => res.json(expenses));
 router.post('/', (req, res) => {
   const { description, value, processId } = req.body;
   const newExpense = { id: String(Date.now()), description, value, processId };
