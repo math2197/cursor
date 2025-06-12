@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Chip, Link, Stack, Tooltip, Paper, InputBase, Menu, MenuItem, Checkbox, Tabs, Tab, Autocomplete, InputAdornment } from '@mui/material';
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Typography, IconButton, Chip, Link, Stack, Tooltip, Paper, InputBase, Menu, MenuItem, Checkbox, Tabs, Tab, Autocomplete, InputAdornment, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -340,6 +340,24 @@ function Processos() {
       ),
     },
   ];
+
+  // Função utilitária para cor do status
+  function getStatusColor(status) {
+    switch (status?.toLowerCase()) {
+      case 'ativo':
+      case 'processo ativo':
+        return 'success';
+      case 'arquivado':
+        return 'default';
+      case 'pendente':
+        return 'warning';
+      case 'concluído':
+      case 'finalizado':
+        return 'primary';
+      default:
+        return 'default';
+    }
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
