@@ -75,209 +75,211 @@ function ProcessoDetalhes() {
   };
 
   return (
-    <Box sx={{ p: 3, bgcolor: '#f7f7fa', minHeight: '100vh', width: '100vw', maxWidth: '100vw', boxSizing: 'border-box' }}>
-      {/* Header do processo */}
-      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
-        <Box sx={{ flex: 1 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-            <Typography variant="h5" fontWeight={700} sx={{ flex: 1 }}>{mockProcesso.titulo}</Typography>
-            <Stack direction="row" spacing={1}>
-              {mockProcesso.etiquetas.map((et, i) => (
-                <Chip key={i} label={et.label} color={et.color} size="small" sx={{ borderRadius: 1, fontWeight: 600 }} />
-              ))}
-            </Stack>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 1 }}>
-            <Typography variant="body2" color="text.secondary">Processo <b style={{ color: '#222' }}>{mockProcesso.numero}</b></Typography>
-            <Typography variant="body2" color="text.secondary">Pasta <b style={{ color: '#222' }}>{mockProcesso.pasta}</b></Typography>
-            <Typography variant="body2" color="text.secondary">Cliente <b style={{ color: '#222' }}>{mockProcesso.cliente}</b></Typography>
-            <Typography variant="body2" color="text.secondary">Status <b style={{ color: '#1976d2' }}>{mockProcesso.status}</b></Typography>
-            <Typography variant="body2" color="text.secondary">Responsável <b style={{ color: '#222' }}>{mockProcesso.responsavel}</b></Typography>
-          </Box>
-        </Box>
-        <Stack direction="row" spacing={1} sx={{ mt: 0.5, alignSelf: 'flex-start' }}>
-          <Tooltip title="Voltar para Processos">
-            <IconButton onClick={handleBack} sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}>
-              <ArrowBackIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Editar Processo">
-            <IconButton onClick={handleEdit} color="primary" sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Gerenciar Etiquetas">
-            <IconButton onClick={handleEtiquetas} color="secondary" sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}>
-              <LabelIcon />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-      </Box>
-      <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%', margin: 0 }}>
-        <Grid item xs={12}>
-          <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 3, boxShadow: '0 2px 12px #0001', width: '100%', maxWidth: '100%' }}>
-            {/* Tabs */}
-            <Tabs
-              value={tab}
-              onChange={handleTabChange}
-              sx={{ mb: 2, justifyContent: 'center', display: 'flex', '& .MuiTabs-flexContainer': { justifyContent: 'center' }, '& .MuiTabs-indicator': { bgcolor: '#bdbdbd', height: 3, borderRadius: 2 } }}
-              centered
-            >
-              <Tab label="Resumo" />
-              <Tab label="Atividades" />
-              <Tab label="Histórico" />
-            </Tabs>
-            {tab === 0 && (
-              <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%' }}>
-                {/* Dados do Processo - coluna única, alinhado à esquerda */}
-                <Grid item xs={12} md={8} sx={{ pr: { md: 4 } }}>
-                  <Typography variant="subtitle1" fontWeight={600} gutterBottom sx={{ mb: 2, textAlign: 'left' }}>Dados do Processo</Typography>
-                  <Divider sx={{ mb: 2 }} />
-                  {/* Primeira seção: Terceira interessada, Requerente(s), Requerido(s) */}
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 2 }}>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Terceira interessada</Typography>
-                      <Typography variant="body2" fontWeight={400} sx={{ textAlign: 'left' }}>{mockProcesso.terceiraInteressada}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Requerente(s)</Typography>
-                      <Stack direction="row" spacing={1} sx={{ mt: 0.5, flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-                        {requerentes.map((r, i) => (
-                          <Chip key={i} label={r} color="primary" size="small" sx={{ borderRadius: 1, bgcolor: '#e3f2fd', color: '#1976d2', fontWeight: 600 }} />
-                        ))}
-                      </Stack>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Requerido(s)</Typography>
-                      <Stack direction="row" spacing={1} sx={{ mt: 0.5, flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-                        {requeridos.map((r, i) => (
-                          <Chip key={i} label={r} color="secondary" size="small" sx={{ borderRadius: 1, bgcolor: '#f3e5f5', color: '#7b1fa2', fontWeight: 600 }} />
-                        ))}
-                      </Stack>
-                    </Box>
-                  </Box>
-                  <Divider sx={{ mb: 2 }} />
-                  {/* Demais campos, todos alinhados à esquerda */}
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Ação</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.acao}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Objeto</Typography>
-                      <Typography variant="body2" fontWeight={400} sx={{ textAlign: 'justify' }}>{mockProcesso.objeto}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Número</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.numero}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Juízo</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.juizo}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Link no tribunal</Typography>
-                      <Box>
-                        <Link href={mockProcesso.link} target="_blank" rel="noopener" sx={{ fontWeight: 500, fontSize: 13, display: 'inline-block', mt: 0.5, textAlign: 'left' }}>Acessar</Link>
-                      </Box>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Valor da causa</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.valorCausa}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Valor da condenação</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.valorCond}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Distribuído em</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.distribuido}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Criado em</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.criado}</Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-                {/* Cards de Resumo à direita */}
-                <Grid item xs={12} md={4}>
-                  <Stack spacing={2}>
-                    <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <EventIcon color="primary" sx={{ mr: 1 }} />
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="subtitle2" fontWeight={600}>Próximas atividades</Typography>
-                        <Typography variant="body2" color="text.secondary">Este processo não possui atividades pendentes.</Typography>
-                      </Box>
-                    </Paper>
-                    <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <DescriptionIcon color="primary" sx={{ mr: 1 }} />
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="subtitle2" fontWeight={600}>Documentos</Typography>
-                        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                          <Button variant="outlined" size="small" startIcon={<UploadFileIcon />} component="label">
-                            Anexar
-                            <input type="file" hidden multiple onChange={handleUpload} />
-                          </Button>
-                          {docs.length > 0 && <Typography variant="caption" color="text.secondary">{docs.length} documento(s) anexado(s)</Typography>}
-                        </Stack>
-                        {docs.length === 0 ? (
-                          <Typography variant="body2" color="text.secondary">Nenhum documento encontrado. Adicione aqui documentos, recibos e comprovantes.</Typography>
-                        ) : (
-                          <Stack spacing={0.5}>
-                            {docs.map((doc, i) => (
-                              <Typography key={i} variant="body2" color="text.secondary">{doc.name}</Typography>
-                            ))}
-                          </Stack>
-                        )}
-                      </Box>
-                    </Paper>
-                    <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <ForumIcon color="primary" sx={{ mr: 1 }} />
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="subtitle2" fontWeight={600}>Atendimentos</Typography>
-                        <Typography variant="body2" color="text.secondary">Nenhum atendimento encontrado. Adicione conversas e reuniões importantes com seu cliente.</Typography>
-                      </Box>
-                    </Paper>
-                    <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <ReceiptIcon color="primary" sx={{ mr: 1 }} />
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="subtitle2" fontWeight={600}>Despesas</Typography>
-                        <Typography variant="body2" color="text.secondary">Reembolsado: R$ 0,00 &nbsp;|&nbsp; A reembolsar: R$ 0,00 &nbsp;|&nbsp; Total lançado: R$ 0,00</Typography>
-                      </Box>
-                    </Paper>
-                    <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <AccessTimeIcon color="primary" sx={{ mr: 1 }} />
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="subtitle2" fontWeight={600}>Timesheet</Typography>
-                        <Typography variant="body2" color="text.secondary">Faturado: R$ 0,00 &nbsp;|&nbsp; A faturar: 0min &nbsp;|&nbsp; Total lançado: 0min</Typography>
-                      </Box>
-                    </Paper>
-                  </Stack>
-                </Grid>
-              </Grid>
-            )}
-            {tab === 2 && (
-              <Box>
-                <Typography variant="subtitle1" fontWeight={600} gutterBottom>Últimos históricos</Typography>
-                <Divider sx={{ mb: 2 }} />
-                {mockProcesso.historicos.map((h, i) => (
-                  <Box key={i} sx={{ mb: 1 }}>
-                    <Typography variant="body2" color="text.secondary">{h.data}</Typography>
-                    <Typography>{h.descricao}</Typography>
-                  </Box>
+    <Box sx={{ p: 3, bgcolor: '#f7f7fa', minHeight: '100vh', width: '100vw', maxWidth: '100vw', boxSizing: 'border-box', display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ width: '100%', maxWidth: 1100 }}>
+        {/* Header do processo */}
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
+          <Box sx={{ flex: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <Typography variant="h5" fontWeight={700} sx={{ flex: 1 }}>{mockProcesso.titulo}</Typography>
+              <Stack direction="row" spacing={1}>
+                {mockProcesso.etiquetas.map((et, i) => (
+                  <Chip key={i} label={et.label} color={et.color} size="small" sx={{ borderRadius: 1, fontWeight: 600 }} />
                 ))}
-              </Box>
-            )}
-            {tab === 1 && (
-              <Box>
-                <Typography variant="subtitle1" fontWeight={600} gutterBottom>Atividades</Typography>
-                <Divider sx={{ mb: 2 }} />
-                <Typography color="text.secondary">Nenhuma atividade encontrada.</Typography>
-              </Box>
-            )}
-          </Paper>
+              </Stack>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 1 }}>
+              <Typography variant="body2" color="text.secondary">Processo <b style={{ color: '#222' }}>{mockProcesso.numero}</b></Typography>
+              <Typography variant="body2" color="text.secondary">Pasta <b style={{ color: '#222' }}>{mockProcesso.pasta}</b></Typography>
+              <Typography variant="body2" color="text.secondary">Cliente <b style={{ color: '#222' }}>{mockProcesso.cliente}</b></Typography>
+              <Typography variant="body2" color="text.secondary">Status <b style={{ color: '#1976d2' }}>{mockProcesso.status}</b></Typography>
+              <Typography variant="body2" color="text.secondary">Responsável <b style={{ color: '#222' }}>{mockProcesso.responsavel}</b></Typography>
+            </Box>
+          </Box>
+          <Stack direction="row" spacing={1} sx={{ mt: 0.5, alignSelf: 'flex-start' }}>
+            <Tooltip title="Voltar para Processos">
+              <IconButton onClick={handleBack} sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}>
+                <ArrowBackIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Editar Processo">
+              <IconButton onClick={handleEdit} color="primary" sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Gerenciar Etiquetas">
+              <IconButton onClick={handleEtiquetas} color="secondary" sx={{ bgcolor: '#fff', border: '1px solid #e0e0e0', boxShadow: 0, width: 40, height: 40, borderRadius: '50%', '&:hover': { boxShadow: 2, bgcolor: '#f5f5f5' } }}>
+                <LabelIcon />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        </Box>
+        <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%', margin: 0 }}>
+          <Grid item xs={12}>
+            <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 3, boxShadow: '0 2px 12px #0001', width: '100%', maxWidth: '100%' }}>
+              {/* Tabs */}
+              <Tabs
+                value={tab}
+                onChange={handleTabChange}
+                sx={{ mb: 2, justifyContent: 'center', display: 'flex', '& .MuiTabs-flexContainer': { justifyContent: 'center' }, '& .MuiTabs-indicator': { bgcolor: '#bdbdbd', height: 3, borderRadius: 2 }, '& .MuiTab-root': { color: '#444', fontWeight: 600, fontSize: 16, px: 3, transition: 'none', bgcolor: 'transparent', minHeight: 44 }, '& .Mui-selected': { color: '#222', bgcolor: 'transparent' }, '& .MuiTab-root:hover': { bgcolor: 'transparent', color: '#222' } }}
+                centered
+              >
+                <Tab label="Resumo" disableRipple />
+                <Tab label="Atividades" disableRipple />
+                <Tab label="Histórico" disableRipple />
+              </Tabs>
+              {tab === 0 && (
+                <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%' }}>
+                  {/* Dados do Processo - coluna única, alinhado à esquerda */}
+                  <Grid item xs={12} md={8} sx={{ pr: { md: 4 } }}>
+                    <Typography variant="subtitle1" fontWeight={600} gutterBottom sx={{ mb: 2, textAlign: 'left' }}>Dados do Processo</Typography>
+                    <Divider sx={{ mb: 2 }} />
+                    {/* Primeira seção: Terceira interessada, Requerente(s), Requerido(s) */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 2 }}>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Terceira interessada</Typography>
+                        <Typography variant="body2" fontWeight={400} sx={{ textAlign: 'left' }}>{mockProcesso.terceiraInteressada}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Requerente(s)</Typography>
+                        <Stack direction="row" spacing={1} sx={{ mt: 0.5, flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+                          {requerentes.map((r, i) => (
+                            <Chip key={i} label={r} color="primary" size="small" sx={{ borderRadius: 1, bgcolor: '#e3f2fd', color: '#1976d2', fontWeight: 600 }} />
+                          ))}
+                        </Stack>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Requerido(s)</Typography>
+                        <Stack direction="row" spacing={1} sx={{ mt: 0.5, flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+                          {requeridos.map((r, i) => (
+                            <Chip key={i} label={r} color="secondary" size="small" sx={{ borderRadius: 1, bgcolor: '#f3e5f5', color: '#7b1fa2', fontWeight: 600 }} />
+                          ))}
+                        </Stack>
+                      </Box>
+                    </Box>
+                    <Divider sx={{ mb: 2 }} />
+                    {/* Demais campos, todos alinhados à esquerda */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Ação</Typography>
+                        <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.acao}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Objeto</Typography>
+                        <Typography variant="body2" fontWeight={400} sx={{ textAlign: 'justify' }}>{mockProcesso.objeto}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Número</Typography>
+                        <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.numero}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Juízo</Typography>
+                        <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.juizo}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Link no tribunal</Typography>
+                        <Box sx={{ textAlign: 'left' }}>
+                          <Link href={mockProcesso.link} target="_blank" rel="noopener" sx={{ fontWeight: 500, fontSize: 13, display: 'inline-block', mt: 0.5, textAlign: 'left' }}>Acessar</Link>
+                        </Box>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Valor da causa</Typography>
+                        <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.valorCausa}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Valor da condenação</Typography>
+                        <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.valorCond}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Distribuído em</Typography>
+                        <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.distribuido}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Criado em</Typography>
+                        <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.criado}</Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+                  {/* Cards de Resumo à direita */}
+                  <Grid item xs={12} md={4}>
+                    <Stack spacing={2}>
+                      <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <EventIcon color="primary" sx={{ mr: 1 }} />
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="subtitle2" fontWeight={600}>Próximas atividades</Typography>
+                          <Typography variant="body2" color="text.secondary">Este processo não possui atividades pendentes.</Typography>
+                        </Box>
+                      </Paper>
+                      <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <DescriptionIcon color="primary" sx={{ mr: 1 }} />
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="subtitle2" fontWeight={600}>Documentos</Typography>
+                          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+                            <Button variant="outlined" size="small" startIcon={<UploadFileIcon />} component="label">
+                              Anexar
+                              <input type="file" hidden multiple onChange={handleUpload} />
+                            </Button>
+                            {docs.length > 0 && <Typography variant="caption" color="text.secondary">{docs.length} documento(s) anexado(s)</Typography>}
+                          </Stack>
+                          {docs.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">Nenhum documento encontrado. Adicione aqui documentos, recibos e comprovantes.</Typography>
+                          ) : (
+                            <Stack spacing={0.5}>
+                              {docs.map((doc, i) => (
+                                <Typography key={i} variant="body2" color="text.secondary">{doc.name}</Typography>
+                              ))}
+                            </Stack>
+                          )}
+                        </Box>
+                      </Paper>
+                      <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <ForumIcon color="primary" sx={{ mr: 1 }} />
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="subtitle2" fontWeight={600}>Atendimentos</Typography>
+                          <Typography variant="body2" color="text.secondary">Nenhum atendimento encontrado. Adicione conversas e reuniões importantes com seu cliente.</Typography>
+                        </Box>
+                      </Paper>
+                      <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <ReceiptIcon color="primary" sx={{ mr: 1 }} />
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="subtitle2" fontWeight={600}>Despesas</Typography>
+                          <Typography variant="body2" color="text.secondary">Reembolsado: R$ 0,00 &nbsp;|&nbsp; A reembolsar: R$ 0,00 &nbsp;|&nbsp; Total lançado: R$ 0,00</Typography>
+                        </Box>
+                      </Paper>
+                      <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <AccessTimeIcon color="primary" sx={{ mr: 1 }} />
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="subtitle2" fontWeight={600}>Timesheet</Typography>
+                          <Typography variant="body2" color="text.secondary">Faturado: R$ 0,00 &nbsp;|&nbsp; A faturar: 0min &nbsp;|&nbsp; Total lançado: 0min</Typography>
+                        </Box>
+                      </Paper>
+                    </Stack>
+                  </Grid>
+                </Grid>
+              )}
+              {tab === 2 && (
+                <Box>
+                  <Typography variant="subtitle1" fontWeight={600} gutterBottom>Últimos históricos</Typography>
+                  <Divider sx={{ mb: 2 }} />
+                  {mockProcesso.historicos.map((h, i) => (
+                    <Box key={i} sx={{ mb: 1 }}>
+                      <Typography variant="body2" color="text.secondary">{h.data}</Typography>
+                      <Typography>{h.descricao}</Typography>
+                    </Box>
+                  ))}
+                </Box>
+              )}
+              {tab === 1 && (
+                <Box>
+                  <Typography variant="subtitle1" fontWeight={600} gutterBottom>Atividades</Typography>
+                  <Divider sx={{ mb: 2 }} />
+                  <Typography color="text.secondary">Nenhuma atividade encontrada.</Typography>
+                </Box>
+              )}
+            </Paper>
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
     </Box>
   );
 }
