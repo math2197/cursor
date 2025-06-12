@@ -35,6 +35,7 @@ model User {
   updatedAt DateTime @updatedAt
   processes Process[]
   tasks     Task[]
+  documents Document[] @relation("UserDocuments")
 }
 
 model Client {
@@ -63,6 +64,9 @@ model Process {
   userId      String
   tasks       Task[]
   tags        Tag[]
+  documents   Document[]
+  requerente  String?       // Parte autora
+  requerido   String?       // Parte ré
 }
 
 model Task {
@@ -88,4 +92,16 @@ model Tag {
   updatedAt DateTime  @updatedAt
   processes Process[]
   tasks     Task[]
+}
+
+model Document {
+  id           String   @id @default(uuid())
+  name         String
+  url          String
+  process      Process  @relation(fields: [processId], references: [id])
+  processId    String
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id], name: "UserDocuments")
+  uploadedById String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 } 
