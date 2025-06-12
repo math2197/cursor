@@ -47,7 +47,7 @@ export const getProcessById = async (req: Request, res: Response) => {
 
 export const createProcess = async (req: Request, res: Response) => {
   try {
-    const { number, title, description, status, clientId, userId, requerente, requerido } = req.body;
+    const { number, title, description, status, clientId, userId, requerente, requerido, instancia, juizo, foro } = req.body;
 
     const process = await prisma.process.create({
       data: {
@@ -59,6 +59,9 @@ export const createProcess = async (req: Request, res: Response) => {
         userId,
         requerente,
         requerido,
+        instancia,
+        juizo,
+        foro,
       },
     });
 
@@ -72,7 +75,7 @@ export const createProcess = async (req: Request, res: Response) => {
 export const updateProcess = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { number, title, description, status, clientId, userId, requerente, requerido } = req.body;
+    const { number, title, description, status, clientId, userId, requerente, requerido, instancia, juizo, foro } = req.body;
 
     const process = await prisma.process.update({
       where: { id },
@@ -85,6 +88,9 @@ export const updateProcess = async (req: Request, res: Response) => {
         userId,
         requerente,
         requerido,
+        instancia,
+        juizo,
+        foro,
       },
     });
 
