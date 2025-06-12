@@ -252,6 +252,27 @@ function Processos() {
         <Typography variant="body2" sx={{ fontWeight: 500, color: '#222', fontSize: 14 }}>{params.value}</Typography>
       ),
     },
+    {
+      field: 'acoes',
+      headerName: '',
+      width: 90,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', width: '100%' }}>
+          <Tooltip title="Editar Processo">
+            <IconButton size="small" color="primary" onClick={e => { e.stopPropagation(); handleEdit(params.row.id); }}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Gerenciar Etiquetas">
+            <IconButton size="small" color="secondary" onClick={e => { e.stopPropagation(); handleOpenEtiquetas(params.row); }}>
+              <LabelIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
   ];
 
   return (
