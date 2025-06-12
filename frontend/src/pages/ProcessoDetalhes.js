@@ -117,7 +117,12 @@ function ProcessoDetalhes() {
         <Grid item xs={12}>
           <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 3, boxShadow: '0 2px 12px #0001', width: '100%', maxWidth: '100%' }}>
             {/* Tabs */}
-            <Tabs value={tab} onChange={handleTabChange} sx={{ mb: 2 }}>
+            <Tabs
+              value={tab}
+              onChange={handleTabChange}
+              sx={{ mb: 2, justifyContent: 'center', display: 'flex', '& .MuiTabs-flexContainer': { justifyContent: 'center' }, '& .MuiTabs-indicator': { bgcolor: '#bdbdbd', height: 3, borderRadius: 2 } }}
+              centered
+            >
               <Tab label="Resumo" />
               <Tab label="Atividades" />
               <Tab label="Histórico" />
@@ -173,7 +178,7 @@ function ProcessoDetalhes() {
                     <Box>
                       <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Link no tribunal</Typography>
                       <Box>
-                        <Link href={mockProcesso.link} target="_blank" rel="noopener" sx={{ fontWeight: 500, fontSize: 13, display: 'inline-block', mt: 0.5 }}>Acessar</Link>
+                        <Link href={mockProcesso.link} target="_blank" rel="noopener" sx={{ fontWeight: 500, fontSize: 13, display: 'inline-block', mt: 0.5, textAlign: 'left' }}>Acessar</Link>
                       </Box>
                     </Box>
                     <Box>
