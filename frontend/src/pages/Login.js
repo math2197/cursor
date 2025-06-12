@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/Login.css';
-import API_URL from '../services/api';
+import api, { API_URL } from '../services/api';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -10,24 +10,16 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        window.location.href = '/dashboard';
-      } else {
-        setError(data.message || 'Erro ao fazer login');
-      }
+      const response = await api.post('/api/auth/login', { email, password });
+      const data = response.data;
+      localStorage.setItem('token', data.token);
+      window.location.href = '/dashboard';
     } catch (err) {
-      setError('Erro ao conectar com o servidor');
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Erro ao conectar com o servidor');
+      }
     }
   };
 
