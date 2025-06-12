@@ -58,15 +58,21 @@ const mockProcessos = [
   },
 ];
 
+const mockClientes = [
+  { id: '1', name: 'ASSOCIAÇÃO BRASILEIRA DOS MAGISTRADOS DO TRABALHO' },
+  { id: '2', name: 'ASSOCIAÇÃO DOS REGISTRADORES DE PESSOAS NATURAIS DO ESTADO DO RIO DE JANEIRO' },
+];
+
 function Processos() {
   const [processos, setProcessos] = useState([]);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ 
-    title: '', 
-    number: '', 
-    clientId: '', 
-    status: 'Ativo',
+  const [form, setForm] = useState({
+    number: '',
+    title: '',
     description: '',
+    status: 'Ativo',
+    clientId: '',
+    userId: '',
     requerente: '',
     requerido: ''
   });
@@ -99,11 +105,12 @@ function Processos() {
 
   const handleOpen = () => {
     setForm({ 
-      title: '', 
-      number: '', 
-      clientId: '', 
-      status: 'Ativo',
+      number: '',
+      title: '',
       description: '',
+      status: 'Ativo',
+      clientId: '',
+      userId: '',
       requerente: '',
       requerido: ''
     });
@@ -121,10 +128,17 @@ function Processos() {
 
   const handleSave = async () => {
     try {
+      const token = localStorage.getItem('token');
+      let userId = '';
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        userId = payload.id || payload.userId || '';
+      }
+      const data = { ...form, userId };
       if (editId) {
-        await api.put(`/api/processes/${editId}`, form);
+        await api.put(`/api/processes/${editId}`, data);
       } else {
-        await api.post('/api/processes', form);
+        await api.post('/api/processes', data);
       }
       fetchProcessos();
       setOpen(false);
@@ -136,11 +150,11 @@ function Processos() {
   const handleEdit = (id) => {
     const proc = processos.find(p => p.id === id);
     setForm({
-      title: proc.title,
       number: proc.number,
-      clientId: proc.clientId,
-      status: proc.status,
+      title: proc.title,
       description: proc.description,
+      status: proc.status,
+      clientId: proc.clientId,
       requerente: proc.requerente,
       requerido: proc.requerido
     });
@@ -506,25 +520,26 @@ function Processos() {
         <DialogTitle>{editId ? 'Editar Processo' : 'Novo Processo'}</DialogTitle>
         <DialogContent>
           <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            <TextField label="Pasta" name="pasta" value={form.pasta || ''} onChange={handleChange} fullWidth size="small" />
-            <Autocomplete
-              multiple
-              options={['ASSOCIAÇÃO BRASILEIRA DOS MAGISTRADOS DO TRABALHO']}
-              value={form.clientes || []}
-              onChange={(_e, value) => setForm(f => ({ ...f, clientes: value }))}
-              renderInput={params => <TextField {...params} label="Clientes" size="small" required />}
-              sx={{ mb: 1 }}
-            />
+            <TextField
+              select
+              label="Cliente"
+              name="clientId"
+              value={form.clientId}
+              onChange={handleChange}
+              fullWidth
+              size="small"
+              required
+            >
+              {mockClientes.map((cliente) => (
+                <MenuItem key={cliente.id} value={cliente.id}>{cliente.name}</MenuItem>
+              ))}
+            </TextField>
+            <TextField label="Título" name="title" value={form.title || ''} onChange={handleChange} fullWidth size="small" required />
+            <TextField label="Descrição" name="description" value={form.description || ''} onChange={handleChange} fullWidth multiline minRows={3} size="small" />
+            <TextField label="Status" name="status" value={form.status || ''} onChange={handleChange} fullWidth size="small" />
             <Stack direction="row" spacing={2}>
               <Autocomplete
                 multiple
-                options={['AJUTRA - ASSOCIACAO DOS JUÍZES DO TRABALHO', 'TRIBUNAL REGIONAL DO TRABALHO DA 1ª REGIÃO - TRT 1']}
-                value={form.terceiros || []}
-                onChange={(_e, value) => setForm(f => ({ ...f, terceiros: value }))}
-                renderInput={params => <TextField {...params} label="Outros envolvidos" size="small" />}
-                sx={{ flex: 2 }}
-              />
-              <Autocomplete
                 options={['Requerente', 'Requerido', 'Terceira interessada']}
                 value={form.terceiroTipo || ''}
                 onChange={(_e, value) => setForm(f => ({ ...f, terceiroTipo: value }))}
@@ -532,7 +547,7 @@ function Processos() {
                 sx={{ flex: 1 }}
               />
             </Stack>
-            <TextField label="Título" name="titulo" value={form.titulo || ''} onChange={handleChange} fullWidth size="small" required />
+            <TextField label="Número" name="number" value={form.number || ''} onChange={handleChange} size="small" sx={{ flex: 2 }} />
             <Autocomplete
               multiple
               options={etiquetas}
@@ -555,7 +570,6 @@ function Processos() {
             />
             <Stack direction="row" spacing={2}>
               <TextField label="Instância" name="instancia" value={form.instancia || ''} onChange={handleChange} size="small" sx={{ flex: 1 }} />
-              <TextField label="Número" name="numero" value={form.numero || ''} onChange={handleChange} size="small" sx={{ flex: 2 }} />
             </Stack>
             <Stack direction="row" spacing={2}>
               <TextField label="Juízo" name="juizo" value={form.juizo || ''} onChange={handleChange} size="small" sx={{ flex: 2 }} />
