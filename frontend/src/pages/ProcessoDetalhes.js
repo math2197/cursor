@@ -114,7 +114,7 @@ function ProcessoDetalhes() {
             </Tooltip>
           </Stack>
         </Box>
-        <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%', margin: 0 }}>
+        <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%', margin: 0 }} alignItems="flex-start">
           <Grid item xs={12}>
             <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 3, boxShadow: '0 2px 12px #0001', width: '100%', maxWidth: '100%' }}>
               {/* Tabs */}
@@ -129,9 +129,9 @@ function ProcessoDetalhes() {
                 <Tab label="Histórico" disableRipple />
               </Tabs>
               {tab === 0 && (
-                <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%' }}>
+                <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%' }} alignItems="flex-start">
                   {/* Dados do Processo - coluna única, alinhado à esquerda */}
-                  <Grid item xs={12} md={8} sx={{ pr: { md: 4 } }}>
+                  <Grid item xs={12} md={8} sx={{ pr: { md: 4 }, pl: 0 }}>
                     <Typography variant="subtitle1" fontWeight={600} gutterBottom sx={{ mb: 2, textAlign: 'left' }}>Dados do Processo</Typography>
                     <Divider sx={{ mb: 2 }} />
                     {/* Primeira seção: Terceira interessada, Requerente(s), Requerido(s) */}
@@ -201,7 +201,7 @@ function ProcessoDetalhes() {
                     </Box>
                   </Grid>
                   {/* Cards de Resumo à direita */}
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={12} md={4} sx={{ pl: 0 }}>
                     <Stack spacing={2}>
                       <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
                         <EventIcon color="primary" sx={{ mr: 1 }} />
