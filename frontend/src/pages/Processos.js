@@ -74,7 +74,8 @@ function Processos() {
     clientId: '',
     userId: '',
     requerente: '',
-    requerido: ''
+    requerido: '',
+    terceiroTipo: [],
   });
   const [editId, setEditId] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
@@ -112,7 +113,8 @@ function Processos() {
       clientId: '',
       userId: '',
       requerente: '',
-      requerido: ''
+      requerido: '',
+      terceiroTipo: [],
     });
     setEditId(null);
     setOpen(true);
@@ -156,7 +158,8 @@ function Processos() {
       status: proc.status,
       clientId: proc.clientId,
       requerente: proc.requerente,
-      requerido: proc.requerido
+      requerido: proc.requerido,
+      terceiroTipo: proc.terceiroTipo || [],
     });
     setEditId(id);
     setOpen(true);
@@ -541,7 +544,7 @@ function Processos() {
               <Autocomplete
                 multiple
                 options={['Requerente', 'Requerido', 'Terceira interessada']}
-                value={form.terceiroTipo || ''}
+                value={form.terceiroTipo}
                 onChange={(_e, value) => setForm(f => ({ ...f, terceiroTipo: value }))}
                 renderInput={params => <TextField {...params} label="Tipo" size="small" />}
                 sx={{ flex: 1 }}
