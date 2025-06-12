@@ -75,7 +75,6 @@ function Processos() {
     userId: '',
     requerente: '',
     requerido: '',
-    terceiroTipo: [],
   });
   const [editId, setEditId] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
@@ -114,7 +113,6 @@ function Processos() {
       userId: '',
       requerente: '',
       requerido: '',
-      terceiroTipo: [],
     });
     setEditId(null);
     setOpen(true);
@@ -136,7 +134,16 @@ function Processos() {
         const payload = JSON.parse(atob(token.split('.')[1]));
         userId = payload.id || payload.userId || '';
       }
-      const data = { ...form, userId };
+      const data = {
+        number: form.number,
+        title: form.title,
+        description: form.description,
+        status: form.status,
+        clientId: form.clientId,
+        userId,
+        requerente: form.requerente,
+        requerido: form.requerido
+      };
       if (editId) {
         await api.put(`/api/processes/${editId}`, data);
       } else {
@@ -159,7 +166,6 @@ function Processos() {
       clientId: proc.clientId,
       requerente: proc.requerente,
       requerido: proc.requerido,
-      terceiroTipo: proc.terceiroTipo || [],
     });
     setEditId(id);
     setOpen(true);
@@ -540,16 +546,8 @@ function Processos() {
             <TextField label="Título" name="title" value={form.title || ''} onChange={handleChange} fullWidth size="small" required />
             <TextField label="Descrição" name="description" value={form.description || ''} onChange={handleChange} fullWidth multiline minRows={3} size="small" />
             <TextField label="Status" name="status" value={form.status || ''} onChange={handleChange} fullWidth size="small" />
-            <Stack direction="row" spacing={2}>
-              <Autocomplete
-                multiple
-                options={['Requerente', 'Requerido', 'Terceira interessada']}
-                value={form.terceiroTipo}
-                onChange={(_e, value) => setForm(f => ({ ...f, terceiroTipo: value }))}
-                renderInput={params => <TextField {...params} label="Tipo" size="small" />}
-                sx={{ flex: 1 }}
-              />
-            </Stack>
+            <TextField label="Requerente" name="requerente" value={form.requerente || ''} onChange={handleChange} fullWidth size="small" required />
+            <TextField label="Requerido" name="requerido" value={form.requerido || ''} onChange={handleChange} fullWidth size="small" required />
             <TextField label="Número" name="number" value={form.number || ''} onChange={handleChange} size="small" sx={{ flex: 2 }} />
             <Autocomplete
               multiple

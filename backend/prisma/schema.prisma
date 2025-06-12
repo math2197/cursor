@@ -68,6 +68,9 @@ model Process {
   documents   Document[]
   requerente  String?       // Parte autora
   requerido   String?       // Parte ré
+  instancia   String?       // Nova coluna
+  juizo       String?       // Nova coluna
+  foro        String?       // Nova coluna
 }
 
 model Task {
