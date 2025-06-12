@@ -209,7 +209,7 @@ function Processos() {
                 label={et.label}
                 color={et.color}
                 size="small"
-                sx={{ height: 20, fontWeight: 600, bgcolor: 'background.paper', border: '1px solid #e0e0e0', color: 'inherit', '& .MuiChip-label': { px: 1, fontSize: '0.75rem', fontWeight: 600 } }}
+                sx={{ height: 20, fontWeight: 600, bgcolor: 'background.paper', border: '1px solid #e0e0e0', color: 'inherit', borderRadius: 1, '& .MuiChip-label': { px: 1, fontSize: '0.75rem', fontWeight: 600 } }}
               />
             ))}
           </Box>
@@ -274,11 +274,12 @@ function Processos() {
           renderTags={(value, getTagProps) =>
             value.map((option, index) => (
               <Chip
+                key={index}
                 label={option.label}
                 color={option.color}
                 size="small"
                 {...getTagProps({ index })}
-                sx={{ height: 22, fontWeight: 600, bgcolor: 'background.paper', border: '1px solid #e0e0e0', color: 'inherit', '& .MuiChip-label': { px: 1, fontSize: '0.75rem', fontWeight: 600 } }}
+                sx={{ height: 22, fontWeight: 600, bgcolor: 'background.paper', border: '1px solid #e0e0e0', color: 'inherit', borderRadius: 1, '& .MuiChip-label': { px: 1, fontSize: '0.75rem', fontWeight: 600 } }}
               />
             ))
           }
@@ -310,7 +311,7 @@ function Processos() {
           <span style={{ fontWeight: 600 }}>{selectionModel.length > 0 ? selectionModel.length : filteredProcessos.length}</span> de 157 processos
         </Typography>
       </Box>
-      <Paper elevation={0} sx={{ borderRadius: 2, border: '1px solid #e0e0e0', boxShadow: 0, mt: 2, ml: 0, width: '100%', p: 0, m: 0 }}>
+      <Paper elevation={3} sx={{ borderRadius: 2.5, boxShadow: '0 2px 12px #0001', border: 'none', mt: 2, ml: 0, width: '100%', p: 0, m: 0 }}>
         <div style={{ height: 520, width: '100%' }}>
           <DataGrid
             rows={filteredProcessos}
@@ -331,32 +332,40 @@ function Processos() {
               width: '100%',
               '& .MuiDataGrid-row': {
                 minHeight: 64,
-                borderBottom: '1px solid #f0f0f0',
+                border: 'none',
+                borderRadius: 2,
+                margin: '4px 8px',
+                boxShadow: 'none',
+                transition: 'box-shadow 0.2s, background 0.2s',
                 '&:hover': {
-                  bgcolor: '#f5f5f5',
+                  bgcolor: '#f5f7fa',
+                  boxShadow: '0 2px 8px #0001',
+                  borderRadius: 2,
                 },
               },
               '& .MuiDataGrid-cell': {
-                py: 0.2,
-                px: 1,
+                py: 1.2,
+                px: 2,
                 borderBottom: 'none',
                 overflow: 'visible',
                 whiteSpace: 'normal',
                 wordBreak: 'break-word',
-                lineHeight: 1.2,
+                lineHeight: 1.4,
                 maxWidth: 'initial',
                 height: 'auto',
                 alignItems: 'flex-start',
                 display: 'flex',
+                background: 'transparent',
               },
               '& .MuiDataGrid-columnHeaders': {
                 bgcolor: '#fafbfc',
                 color: '#222',
                 fontWeight: 700,
                 fontSize: 14,
-                borderBottom: '1px solid #e0e0e0',
+                borderBottom: 'none',
                 minHeight: 48,
                 maxHeight: 48,
+                borderRadius: 2,
               },
               '& .MuiCheckbox-root': {
                 p: 0.5,
@@ -397,7 +406,7 @@ function Processos() {
                 onClick={() => handleAtribuirEtiqueta(et)}
                 onDelete={selectedProcesso && selectedProcesso.etiquetas.find(e => e.label === et.label) ? () => handleRemoverEtiqueta(et) : undefined}
                 variant={selectedProcesso && selectedProcesso.etiquetas.find(e => e.label === et.label) ? 'filled' : 'outlined'}
-                sx={{ mb: 1 }}
+                sx={{ height: 20, fontWeight: 600, bgcolor: 'background.paper', border: '1px solid #e0e0e0', color: 'inherit', borderRadius: 1, '& .MuiChip-label': { px: 1, fontSize: '0.75rem', fontWeight: 600 } }}
               />
             ))}
           </Stack>
