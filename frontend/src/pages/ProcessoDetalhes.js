@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Chip, Tabs, Tab, Paper, Grid, Card, CardContent, Divider, Link, Stack, IconButton, Tooltip, Button } from '@mui/material';
+import { Box, Typography, Chip, Tabs, Tab, Paper, Grid, Divider, Link, Stack, IconButton, Tooltip, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import LabelIcon from '@mui/icons-material/Label';
@@ -42,14 +42,6 @@ const mockProcesso = {
     { data: '09/06/2025', descricao: 'Expedido(a) intimação ao TRIBUNAL REGIONAL DO TRABALHO DA 1A' },
   ],
 };
-
-const sideCards = [
-  { title: 'Próximas atividades', content: 'Este processo não possui atividades pendentes.' },
-  { title: 'Documentos', content: 'Nenhum documento encontrado. Adicione aqui documentos, recibos e comprovantes.' },
-  { title: 'Atendimentos', content: 'Nenhum atendimento encontrado. Adicione conversas e reuniões importantes com seu cliente.' },
-  { title: 'Despesas', content: 'Reembolsado: R$ 0,00\nA reembolsar: R$ 0,00\nTotal lançado: R$ 0,00' },
-  { title: 'Timesheet', content: 'Faturado: R$ 0,00\nA faturar: 0min\nTotal lançado: 0min' },
-];
 
 function ProcessoDetalhes() {
   const [tab, setTab] = useState(0);

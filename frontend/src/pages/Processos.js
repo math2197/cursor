@@ -10,8 +10,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import API_URL from '../services/api';
+import api from '../services/api';
 
 const mockEtiquetas = [
   { label: 'ABMT', color: 'warning' },
@@ -87,10 +86,7 @@ function Processos() {
 
   const fetchProcessos = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/api/processes`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/processes');
       setProcessos(response.data);
     } catch (error) {
       console.error('Erro ao buscar processos:', error);
@@ -125,15 +121,10 @@ function Processos() {
 
   const handleSave = async () => {
     try {
-      const token = localStorage.getItem('token');
       if (editId) {
-        await axios.put(`${API_URL}/api/processes/${editId}`, form, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.put(`/api/processes/${editId}`, form);
       } else {
-        await axios.post(`${API_URL}/api/processes`, form, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.post('/api/processes', form);
       }
       fetchProcessos();
       setOpen(false);
@@ -160,10 +151,7 @@ function Processos() {
   const handleDelete = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este processo?')) {
       try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`${API_URL}/api/processes/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete(`/api/processes/${id}`);
         fetchProcessos();
       } catch (error) {
         console.error('Erro ao deletar processo:', error);
