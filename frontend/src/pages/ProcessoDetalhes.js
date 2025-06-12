@@ -123,124 +123,128 @@ function ProcessoDetalhes() {
               <Tab label="Histórico" />
             </Tabs>
             {tab === 0 && (
-              <Box>
-                {/* Dados do Processo - coluna única, justificado */}
-                <Typography variant="subtitle1" fontWeight={600} gutterBottom sx={{ mb: 2 }}>Dados do Processo</Typography>
-                <Divider sx={{ mb: 2 }} />
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Ação</Typography>
-                    <Typography variant="body2" fontWeight={500}>{mockProcesso.acao}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Objeto</Typography>
-                    <Typography variant="body2" fontWeight={400} sx={{ textAlign: 'justify' }}>{mockProcesso.objeto}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Número</Typography>
-                    <Typography variant="body2" fontWeight={500}>{mockProcesso.numero}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Juízo</Typography>
-                    <Typography variant="body2" fontWeight={500}>{mockProcesso.juizo}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Link no tribunal</Typography>
+              <Grid container spacing={3}>
+                {/* Dados do Processo - coluna única, alinhado à esquerda */}
+                <Grid item xs={12} md={8}>
+                  <Typography variant="subtitle1" fontWeight={600} gutterBottom sx={{ mb: 2 }}>Dados do Processo</Typography>
+                  <Divider sx={{ mb: 2 }} />
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
                     <Box>
-                      <Link href={mockProcesso.link} target="_blank" rel="noopener" sx={{ fontWeight: 500, fontSize: 13, display: 'inline-block', mt: 0.5 }}>Acessar</Link>
+                      <Typography variant="caption" color="text.secondary">Ação</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.acao}</Typography>
                     </Box>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Valor da causa</Typography>
-                    <Typography variant="body2" fontWeight={500}>{mockProcesso.valorCausa}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Valor da condenação</Typography>
-                    <Typography variant="body2" fontWeight={500}>{mockProcesso.valorCond}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Distribuído em</Typography>
-                    <Typography variant="body2" fontWeight={500}>{mockProcesso.distribuido}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Criado em</Typography>
-                    <Typography variant="body2" fontWeight={500}>{mockProcesso.criado}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Terceira interessada</Typography>
-                    <Typography variant="body2" fontWeight={400}>{mockProcesso.terceiraInteressada}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Requerente(s)</Typography>
-                    <Stack direction="row" spacing={1} sx={{ mt: 0.5, flexWrap: 'wrap' }}>
-                      {requerentes.map((r, i) => (
-                        <Chip key={i} label={r} color="primary" size="small" sx={{ borderRadius: 1, bgcolor: '#e3f2fd', color: '#1976d2', fontWeight: 600 }} />
-                      ))}
-                    </Stack>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Requerido(s)</Typography>
-                    <Stack direction="row" spacing={1} sx={{ mt: 0.5, flexWrap: 'wrap' }}>
-                      {requeridos.map((r, i) => (
-                        <Chip key={i} label={r} color="secondary" size="small" sx={{ borderRadius: 1, bgcolor: '#f3e5f5', color: '#7b1fa2', fontWeight: 600 }} />
-                      ))}
-                    </Stack>
-                  </Box>
-                </Box>
-                {/* Cards de Resumo */}
-                <Stack spacing={2}>
-                  <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <EventIcon color="primary" sx={{ mr: 1 }} />
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="subtitle2" fontWeight={600}>Próximas atividades</Typography>
-                      <Typography variant="body2" color="text.secondary">Este processo não possui atividades pendentes.</Typography>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Objeto</Typography>
+                      <Typography variant="body2" fontWeight={400} sx={{ textAlign: 'justify' }}>{mockProcesso.objeto}</Typography>
                     </Box>
-                  </Paper>
-                  <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <DescriptionIcon color="primary" sx={{ mr: 1 }} />
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="subtitle2" fontWeight={600}>Documentos</Typography>
-                      <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                        <Button variant="outlined" size="small" startIcon={<UploadFileIcon />} component="label">
-                          Anexar
-                          <input type="file" hidden multiple onChange={handleUpload} />
-                        </Button>
-                        {docs.length > 0 && <Typography variant="caption" color="text.secondary">{docs.length} documento(s) anexado(s)</Typography>}
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Número</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.numero}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Juízo</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.juizo}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Link no tribunal</Typography>
+                      <Box>
+                        <Link href={mockProcesso.link} target="_blank" rel="noopener" sx={{ fontWeight: 500, fontSize: 13, display: 'inline-block', mt: 0.5 }}>Acessar</Link>
+                      </Box>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Valor da causa</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.valorCausa}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Valor da condenação</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.valorCond}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Distribuído em</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.distribuido}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Criado em</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.criado}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Terceira interessada</Typography>
+                      <Typography variant="body2" fontWeight={400} sx={{ textAlign: 'left' }}>{mockProcesso.terceiraInteressada}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Requerente(s)</Typography>
+                      <Stack direction="row" spacing={1} sx={{ mt: 0.5, flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+                        {requerentes.map((r, i) => (
+                          <Chip key={i} label={r} color="primary" size="small" sx={{ borderRadius: 1, bgcolor: '#e3f2fd', color: '#1976d2', fontWeight: 600 }} />
+                        ))}
                       </Stack>
-                      {docs.length === 0 ? (
-                        <Typography variant="body2" color="text.secondary">Nenhum documento encontrado. Adicione aqui documentos, recibos e comprovantes.</Typography>
-                      ) : (
-                        <Stack spacing={0.5}>
-                          {docs.map((doc, i) => (
-                            <Typography key={i} variant="body2" color="text.secondary">{doc.name}</Typography>
-                          ))}
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Requerido(s)</Typography>
+                      <Stack direction="row" spacing={1} sx={{ mt: 0.5, flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+                        {requeridos.map((r, i) => (
+                          <Chip key={i} label={r} color="secondary" size="small" sx={{ borderRadius: 1, bgcolor: '#f3e5f5', color: '#7b1fa2', fontWeight: 600 }} />
+                        ))}
+                      </Stack>
+                    </Box>
+                  </Box>
+                </Grid>
+                {/* Cards de Resumo à direita */}
+                <Grid item xs={12} md={4}>
+                  <Stack spacing={2}>
+                    <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <EventIcon color="primary" sx={{ mr: 1 }} />
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="subtitle2" fontWeight={600}>Próximas atividades</Typography>
+                        <Typography variant="body2" color="text.secondary">Este processo não possui atividades pendentes.</Typography>
+                      </Box>
+                    </Paper>
+                    <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <DescriptionIcon color="primary" sx={{ mr: 1 }} />
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="subtitle2" fontWeight={600}>Documentos</Typography>
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+                          <Button variant="outlined" size="small" startIcon={<UploadFileIcon />} component="label">
+                            Anexar
+                            <input type="file" hidden multiple onChange={handleUpload} />
+                          </Button>
+                          {docs.length > 0 && <Typography variant="caption" color="text.secondary">{docs.length} documento(s) anexado(s)</Typography>}
                         </Stack>
-                      )}
-                    </Box>
-                  </Paper>
-                  <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <ForumIcon color="primary" sx={{ mr: 1 }} />
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="subtitle2" fontWeight={600}>Atendimentos</Typography>
-                      <Typography variant="body2" color="text.secondary">Nenhum atendimento encontrado. Adicione conversas e reuniões importantes com seu cliente.</Typography>
-                    </Box>
-                  </Paper>
-                  <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <ReceiptIcon color="primary" sx={{ mr: 1 }} />
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="subtitle2" fontWeight={600}>Despesas</Typography>
-                      <Typography variant="body2" color="text.secondary">Reembolsado: R$ 0,00 &nbsp;|&nbsp; A reembolsar: R$ 0,00 &nbsp;|&nbsp; Total lançado: R$ 0,00</Typography>
-                    </Box>
-                  </Paper>
-                  <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <AccessTimeIcon color="primary" sx={{ mr: 1 }} />
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="subtitle2" fontWeight={600}>Timesheet</Typography>
-                      <Typography variant="body2" color="text.secondary">Faturado: R$ 0,00 &nbsp;|&nbsp; A faturar: 0min &nbsp;|&nbsp; Total lançado: 0min</Typography>
-                    </Box>
-                  </Paper>
-                </Stack>
-              </Box>
+                        {docs.length === 0 ? (
+                          <Typography variant="body2" color="text.secondary">Nenhum documento encontrado. Adicione aqui documentos, recibos e comprovantes.</Typography>
+                        ) : (
+                          <Stack spacing={0.5}>
+                            {docs.map((doc, i) => (
+                              <Typography key={i} variant="body2" color="text.secondary">{doc.name}</Typography>
+                            ))}
+                          </Stack>
+                        )}
+                      </Box>
+                    </Paper>
+                    <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <ForumIcon color="primary" sx={{ mr: 1 }} />
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="subtitle2" fontWeight={600}>Atendimentos</Typography>
+                        <Typography variant="body2" color="text.secondary">Nenhum atendimento encontrado. Adicione conversas e reuniões importantes com seu cliente.</Typography>
+                      </Box>
+                    </Paper>
+                    <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <ReceiptIcon color="primary" sx={{ mr: 1 }} />
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="subtitle2" fontWeight={600}>Despesas</Typography>
+                        <Typography variant="body2" color="text.secondary">Reembolsado: R$ 0,00 &nbsp;|&nbsp; A reembolsar: R$ 0,00 &nbsp;|&nbsp; Total lançado: R$ 0,00</Typography>
+                      </Box>
+                    </Paper>
+                    <Paper elevation={1} sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <AccessTimeIcon color="primary" sx={{ mr: 1 }} />
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="subtitle2" fontWeight={600}>Timesheet</Typography>
+                        <Typography variant="body2" color="text.secondary">Faturado: R$ 0,00 &nbsp;|&nbsp; A faturar: 0min &nbsp;|&nbsp; Total lançado: 0min</Typography>
+                      </Box>
+                    </Paper>
+                  </Stack>
+                </Grid>
+              </Grid>
             )}
             {tab === 2 && (
               <Box>
@@ -262,19 +266,6 @@ function ProcessoDetalhes() {
               </Box>
             )}
           </Paper>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          {sideCards.map((card, i) => (
-            <Card key={i} sx={{ mb: 2, borderRadius: 3, boxShadow: '0 2px 12px #0001' }}>
-              <CardContent>
-                <Typography variant="subtitle1" fontWeight={600}>{card.title}</Typography>
-                <Divider sx={{ my: 1 }} />
-                {card.content.split('\n').map((line, idx) => (
-                  <Typography key={idx} variant="body2">{line}</Typography>
-                ))}
-              </CardContent>
-            </Card>
-          ))}
         </Grid>
       </Grid>
     </Box>
