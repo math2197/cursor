@@ -67,8 +67,8 @@ export const createProcess = async (req: Request, res: Response) => {
 
     return res.status(201).json(process);
   } catch (error) {
-    console.error('Erro ao criar processo:', error);
-    return res.status(500).json({ message: 'Erro interno do servidor' });
+    console.error('Erro ao criar processo:', error, req.body);
+    return res.status(500).json({ message: 'Erro interno do servidor', error: error.message });
   }
 };
 
@@ -96,8 +96,8 @@ export const updateProcess = async (req: Request, res: Response) => {
 
     return res.json(process);
   } catch (error) {
-    console.error('Erro ao atualizar processo:', error);
-    return res.status(500).json({ message: 'Erro interno do servidor' });
+    console.error('Erro ao atualizar processo:', error, req.body);
+    return res.status(500).json({ message: 'Erro interno do servidor', error: error.message });
   }
 };
 
