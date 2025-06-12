@@ -126,53 +126,16 @@ function ProcessoDetalhes() {
               <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%' }}>
                 {/* Dados do Processo - coluna única, alinhado à esquerda */}
                 <Grid item xs={12} md={8} sx={{ pr: { md: 4 } }}>
-                  <Typography variant="subtitle1" fontWeight={600} gutterBottom sx={{ mb: 2 }}>Dados do Processo</Typography>
+                  <Typography variant="subtitle1" fontWeight={600} gutterBottom sx={{ mb: 2, textAlign: 'left' }}>Dados do Processo</Typography>
                   <Divider sx={{ mb: 2 }} />
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
+                  {/* Primeira seção: Terceira interessada, Requerente(s), Requerido(s) */}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 2 }}>
                     <Box>
-                      <Typography variant="caption" color="text.secondary">Ação</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.acao}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">Objeto</Typography>
-                      <Typography variant="body2" fontWeight={400} sx={{ textAlign: 'justify' }}>{mockProcesso.objeto}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">Número</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.numero}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">Juízo</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.juizo}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">Link no tribunal</Typography>
-                      <Box>
-                        <Link href={mockProcesso.link} target="_blank" rel="noopener" sx={{ fontWeight: 500, fontSize: 13, display: 'inline-block', mt: 0.5 }}>Acessar</Link>
-                      </Box>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">Valor da causa</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.valorCausa}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">Valor da condenação</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.valorCond}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">Distribuído em</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.distribuido}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">Criado em</Typography>
-                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.criado}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">Terceira interessada</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Terceira interessada</Typography>
                       <Typography variant="body2" fontWeight={400} sx={{ textAlign: 'left' }}>{mockProcesso.terceiraInteressada}</Typography>
                     </Box>
                     <Box>
-                      <Typography variant="caption" color="text.secondary">Requerente(s)</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Requerente(s)</Typography>
                       <Stack direction="row" spacing={1} sx={{ mt: 0.5, flexWrap: 'wrap', justifyContent: 'flex-start' }}>
                         {requerentes.map((r, i) => (
                           <Chip key={i} label={r} color="primary" size="small" sx={{ borderRadius: 1, bgcolor: '#e3f2fd', color: '#1976d2', fontWeight: 600 }} />
@@ -180,12 +143,54 @@ function ProcessoDetalhes() {
                       </Stack>
                     </Box>
                     <Box>
-                      <Typography variant="caption" color="text.secondary">Requerido(s)</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Requerido(s)</Typography>
                       <Stack direction="row" spacing={1} sx={{ mt: 0.5, flexWrap: 'wrap', justifyContent: 'flex-start' }}>
                         {requeridos.map((r, i) => (
                           <Chip key={i} label={r} color="secondary" size="small" sx={{ borderRadius: 1, bgcolor: '#f3e5f5', color: '#7b1fa2', fontWeight: 600 }} />
                         ))}
                       </Stack>
+                    </Box>
+                  </Box>
+                  <Divider sx={{ mb: 2 }} />
+                  {/* Demais campos, todos alinhados à esquerda */}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Ação</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.acao}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Objeto</Typography>
+                      <Typography variant="body2" fontWeight={400} sx={{ textAlign: 'justify' }}>{mockProcesso.objeto}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Número</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.numero}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Juízo</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.juizo}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Link no tribunal</Typography>
+                      <Box>
+                        <Link href={mockProcesso.link} target="_blank" rel="noopener" sx={{ fontWeight: 500, fontSize: 13, display: 'inline-block', mt: 0.5 }}>Acessar</Link>
+                      </Box>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Valor da causa</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.valorCausa}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Valor da condenação</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.valorCond}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Distribuído em</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.distribuido}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'left', display: 'block' }}>Criado em</Typography>
+                      <Typography variant="body2" fontWeight={500} sx={{ textAlign: 'left' }}>{mockProcesso.criado}</Typography>
                     </Box>
                   </Box>
                 </Grid>
