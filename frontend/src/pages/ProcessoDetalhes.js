@@ -75,7 +75,7 @@ function ProcessoDetalhes() {
   };
 
   return (
-    <Box sx={{ p: 3, bgcolor: '#f7f7fa', minHeight: '100vh' }}>
+    <Box sx={{ p: 3, bgcolor: '#f7f7fa', minHeight: '100vh', width: '100vw', maxWidth: '100vw', boxSizing: 'border-box' }}>
       {/* Header do processo */}
       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
         <Box sx={{ flex: 1 }}>
@@ -113,9 +113,9 @@ function ProcessoDetalhes() {
           </Tooltip>
         </Stack>
       </Box>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 3, boxShadow: '0 2px 12px #0001' }}>
+      <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%', margin: 0 }}>
+        <Grid item xs={12}>
+          <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 3, boxShadow: '0 2px 12px #0001', width: '100%', maxWidth: '100%' }}>
             {/* Tabs */}
             <Tabs value={tab} onChange={handleTabChange} sx={{ mb: 2 }}>
               <Tab label="Resumo" />
@@ -123,9 +123,9 @@ function ProcessoDetalhes() {
               <Tab label="Histórico" />
             </Tabs>
             {tab === 0 && (
-              <Grid container spacing={3}>
+              <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%' }}>
                 {/* Dados do Processo - coluna única, alinhado à esquerda */}
-                <Grid item xs={12} md={8}>
+                <Grid item xs={12} md={8} sx={{ pr: { md: 4 } }}>
                   <Typography variant="subtitle1" fontWeight={600} gutterBottom sx={{ mb: 2 }}>Dados do Processo</Typography>
                   <Divider sx={{ mb: 2 }} />
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
