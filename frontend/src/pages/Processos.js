@@ -399,14 +399,76 @@ function Processos() {
           />
         </div>
       </Paper>
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>{editId ? 'Editar Processo' : 'Novo Processo'}</DialogTitle>
         <DialogContent>
-          <TextField label="Título" name="titulo" value={form.titulo} onChange={handleChange} fullWidth margin="normal" />
-          <TextField label="Número" name="numero" value={form.numero} onChange={handleChange} fullWidth margin="normal" />
-          <TextField label="Cliente" name="cliente" value={form.cliente} onChange={handleChange} fullWidth margin="normal" />
-          <TextField label="Ação / Foro" name="acaoForo" value={form.acaoForo} onChange={handleChange} fullWidth margin="normal" />
-          <TextField label="Últ. Mov" name="ultMov" value={form.ultMov} onChange={handleChange} fullWidth margin="normal" />
+          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <TextField label="Pasta" name="pasta" value={form.pasta || ''} onChange={handleChange} fullWidth size="small" />
+            <Autocomplete
+              multiple
+              options={['ASSOCIAÇÃO BRASILEIRA DOS MAGISTRADOS DO TRABALHO']}
+              value={form.clientes || []}
+              onChange={(_e, value) => setForm(f => ({ ...f, clientes: value }))}
+              renderInput={params => <TextField {...params} label="Clientes" size="small" required />}
+              sx={{ mb: 1 }}
+            />
+            <Stack direction="row" spacing={2}>
+              <Autocomplete
+                multiple
+                options={['AJUTRA - ASSOCIACAO DOS JUÍZES DO TRABALHO', 'TRIBUNAL REGIONAL DO TRABALHO DA 1ª REGIÃO - TRT 1']}
+                value={form.terceiros || []}
+                onChange={(_e, value) => setForm(f => ({ ...f, terceiros: value }))}
+                renderInput={params => <TextField {...params} label="Outros envolvidos" size="small" />}
+                sx={{ flex: 2 }}
+              />
+              <Autocomplete
+                options={['Requerente', 'Requerido', 'Terceira interessada']}
+                value={form.terceiroTipo || ''}
+                onChange={(_e, value) => setForm(f => ({ ...f, terceiroTipo: value }))}
+                renderInput={params => <TextField {...params} label="Tipo" size="small" />}
+                sx={{ flex: 1 }}
+              />
+            </Stack>
+            <TextField label="Título" name="titulo" value={form.titulo || ''} onChange={handleChange} fullWidth size="small" required />
+            <Autocomplete
+              multiple
+              options={etiquetas}
+              getOptionLabel={option => option.label}
+              value={form.etiquetas || []}
+              onChange={(_e, value) => setForm(f => ({ ...f, etiquetas: value }))}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    label={option.label}
+                    color={option.color}
+                    size="small"
+                    {...getTagProps({ index })}
+                    sx={{ height: 22, fontWeight: 600, bgcolor: 'background.paper', border: '1px solid #e0e0e0', color: 'inherit', borderRadius: 1, '& .MuiChip-label': { px: 1, fontSize: '0.75rem', fontWeight: 600 } }}
+                  />
+                ))
+              }
+              renderInput={params => <TextField {...params} label="Etiqueta" size="small" />}
+              sx={{ mb: 1 }}
+            />
+            <Stack direction="row" spacing={2}>
+              <TextField label="Instância" name="instancia" value={form.instancia || ''} onChange={handleChange} size="small" sx={{ flex: 1 }} />
+              <TextField label="Número" name="numero" value={form.numero || ''} onChange={handleChange} size="small" sx={{ flex: 2 }} />
+            </Stack>
+            <Stack direction="row" spacing={2}>
+              <TextField label="Juízo" name="juizo" value={form.juizo || ''} onChange={handleChange} size="small" sx={{ flex: 2 }} />
+              <TextField label="Foro" name="foro" value={form.foro || ''} onChange={handleChange} size="small" sx={{ flex: 1 }} />
+            </Stack>
+            <TextField label="Ação" name="acaoForo" value={form.acaoForo || ''} onChange={handleChange} fullWidth size="small" />
+            <TextField label="Link no tribunal" name="link" value={form.link || ''} onChange={handleChange} fullWidth size="small" />
+            <TextField label="Objeto" name="objeto" value={form.objeto || ''} onChange={handleChange} fullWidth multiline minRows={3} size="small" />
+            <Stack direction="row" spacing={2}>
+              <TextField label="Valor da causa" name="valorCausa" value={form.valorCausa || ''} onChange={handleChange} size="small" sx={{ flex: 1 }} />
+              <TextField label="Distribuído em" name="distribuido" value={form.distribuido || ''} onChange={handleChange} size="small" sx={{ flex: 1 }} type="date" InputLabelProps={{ shrink: true }} />
+            </Stack>
+            <TextField label="Valor da condenação" name="valorCond" value={form.valorCond || ''} onChange={handleChange} size="small" />
+            <TextField label="Observações" name="observacoes" value={form.observacoes || ''} onChange={handleChange} fullWidth multiline minRows={2} size="small" />
+            <TextField label="Responsável" name="responsavel" value={form.responsavel || ''} onChange={handleChange} size="small" required />
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancelar</Button>
