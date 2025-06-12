@@ -21,7 +21,9 @@ const processSchema = Joi.object({
   description: Joi.string().allow(null, ''),
   status: Joi.string().valid('PENDING', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED').required(),
   clientId: Joi.string().required(),
-  userId: Joi.string().required()
+  userId: Joi.string().required(),
+  requerente: Joi.string().allow(null, ''),
+  requerido: Joi.string().allow(null, ''),
 });
 
 router.use(authMiddleware);

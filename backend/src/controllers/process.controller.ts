@@ -9,6 +9,7 @@ export const getProcesses = async (_req: Request, res: Response) => {
         user: true,
         tasks: true,
         tags: true,
+        documents: true,
       },
     });
     return res.json(processes);
@@ -29,6 +30,7 @@ export const getProcessById = async (req: Request, res: Response) => {
         user: true,
         tasks: true,
         tags: true,
+        documents: true,
       },
     });
 
@@ -45,7 +47,7 @@ export const getProcessById = async (req: Request, res: Response) => {
 
 export const createProcess = async (req: Request, res: Response) => {
   try {
-    const { number, title, description, status, clientId, userId } = req.body;
+    const { number, title, description, status, clientId, userId, requerente, requerido } = req.body;
 
     const process = await prisma.process.create({
       data: {
@@ -55,6 +57,8 @@ export const createProcess = async (req: Request, res: Response) => {
         status,
         clientId,
         userId,
+        requerente,
+        requerido,
       },
     });
 
@@ -68,7 +72,7 @@ export const createProcess = async (req: Request, res: Response) => {
 export const updateProcess = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { number, title, description, status, clientId, userId } = req.body;
+    const { number, title, description, status, clientId, userId, requerente, requerido } = req.body;
 
     const process = await prisma.process.update({
       where: { id },
@@ -79,6 +83,8 @@ export const updateProcess = async (req: Request, res: Response) => {
         status,
         clientId,
         userId,
+        requerente,
+        requerido,
       },
     });
 
