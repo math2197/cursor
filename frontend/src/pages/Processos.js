@@ -75,6 +75,9 @@ function Processos() {
     userId: '',
     requerente: '',
     requerido: '',
+    instancia: '',
+    juizo: '',
+    foro: '',
   });
   const [editId, setEditId] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
@@ -113,6 +116,9 @@ function Processos() {
       userId: '',
       requerente: '',
       requerido: '',
+      instancia: '',
+      juizo: '',
+      foro: '',
     });
     setEditId(null);
     setOpen(true);
@@ -142,7 +148,10 @@ function Processos() {
         clientId: form.clientId,
         userId,
         requerente: form.requerente,
-        requerido: form.requerido
+        requerido: form.requerido,
+        instancia: form.instancia,
+        juizo: form.juizo,
+        foro: form.foro
       };
       if (editId) {
         await api.put(`/api/processes/${editId}`, data);
@@ -166,6 +175,9 @@ function Processos() {
       clientId: proc.clientId,
       requerente: proc.requerente,
       requerido: proc.requerido,
+      instancia: proc.instancia,
+      juizo: proc.juizo,
+      foro: proc.foro,
     });
     setEditId(id);
     setOpen(true);
